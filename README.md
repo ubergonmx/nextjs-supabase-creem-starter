@@ -1,21 +1,38 @@
-# Next.js template
+# Next.js + Supabase + Creem Starter
 
-This is a Next.js template with shadcn/ui.
+![Status](https://img.shields.io/badge/status-work--in--progress-yellow)
+![License](https://img.shields.io/badge/license-MIT-blue)
 
-## Adding components
+> 🚧 This project is actively under development.
 
-To add components to your app, run the following command:
+Production-ready Next.js starter with Supabase auth and Creem payments pre-integrated.
+Clone, configure, and start selling — no boilerplate to write.
 
-```bash
-npx shadcn@latest add button
-```
+## Tech Stack
 
-This will place the ui components in the `components` directory.
+- **Framework** — [Next.js](https://nextjs.org) (App Router, Server Components)
+- **Auth & Database** — [Supabase](https://supabase.com)
+- **Payments** — [Creem](https://creem.io)
+- **Styling** — [Tailwind CSS](https://tailwindcss.com)
+- **UI Components** — [shadcn/ui](https://ui.shadcn.com)
+- **Language** — TypeScript (strict mode)
 
-## Using components
+## Features
 
-To use the components in your app, import them as follows:
+> Coming soon
 
-```tsx
-import { Button } from "@/components/ui/button";
-```
+## Getting Started
+
+> Coming soon
+
+## Deployment
+
+> Coming soon
+
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md).
+
+## License
+
+[MIT](./LICENSE)

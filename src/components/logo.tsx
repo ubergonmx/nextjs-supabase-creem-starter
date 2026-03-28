@@ -1,32 +1,151 @@
+"use client";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 import type React from "react";
 
-export const LogoIcon = (props: React.ComponentProps<"svg">) => (
-	<svg
-		xmlns="http://www.w3.org/2000/svg"
-		viewBox="0 0 94.79 108.66"
-		{...props}
-	>
-		<path
-			fill="#a0ec06"
-			d="M55.52,18.95s.09-5.11,5.82-5.11h29.29l3.56-13.84h-26.66c-3.42,0-6.19,2.77-6.19,6.19,0,5.11-5.82,5.11-5.82,5.11h-27.57l-.19.08c-9.7,0-18.23,4.98-23.2,12.51v1.25h44.77c3.42,0,6.19-2.77,6.19-6.19Z"
-		/>
-		<path
-			fill="#a0ec06"
-			d="M43.79,46.02c3.42,0,6.19-2.77,6.19-6.19,0,0,.09-5.11,5.82-5.11h29.45l3.56-13.84h-26.83c-3.42,0-6.19,2.77-6.19,6.19,0,5.11-5.82,5.11-5.82,5.11H.88c-.57,2.22-.88,4.55-.88,6.96s.3,4.68.86,6.88h42.93Z"
-		/>
-		<path
-			fill="#a0ec06"
-			d="M73.95,42.56c-1.72-.52-3.5-.79-5.3-.79h-11.36c-3.4,0-6.29,2.72-6.26,6.12.05,5.18-5.82,5.18-5.82,5.18H3.75c4.81,8.27,13.76,13.84,24.01,13.84h11.26c3.42,0,6.19-2.77,6.19-6.19,0,0,.09-5.11,5.82-5.11h40.09c-3.07-7.35-10.88-11.14-17.17-13.04Z"
-		/>
-		<path
-			fill="#a0ec06"
-			d="M94.05,62.65h-42.5c-3.42,0-6.19,2.77-6.19,6.19,0,5.11-5.82,5.11-5.82,5.11H10.11l-3.69,13.84h26.93c3.42,0,6.19-2.77,6.19-6.19,0,0,.09-5.11,5.82-5.11h48.48c.62-2.35.95-4.82.95-7.36,0-2.23-.26-4.39-.74-6.48Z"
-		/>
-		<path
-			fill="#a0ec06"
-			d="M39.3,89.72c0,5.11-5.82,5.11-5.82,5.11H4.55l-3.69,13.84h26.43c3.42,0,6.19-2.77,6.19-6.19,0,0,.09-5.11,5.82-5.11h32.45c7.76-1.58,14.38-6.29,18.51-12.74v-1.09h-44.77c-3.42,0-6.19,2.77-6.19,6.19Z"
-		/>
-	</svg>
+const LogoDark = (props: React.ComponentProps<"svg">) => (
+  <svg width="32" height="32" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+    <g filter="url(#filter0_iii_dark)">
+      <g clipPath="url(#clip0_dark)">
+        <rect width="48" height="48" rx="12" fill="#22262F"/>
+        <rect width="48" height="48" fill="url(#paint0_dark)"/>
+        <g filter="url(#filter1_d_dark)">
+          <path fillRule="evenodd" clipRule="evenodd" d="M24 39C32.2843 39 39 32.2843 39 24C39 15.7157 32.2843 9 24 9C15.7157 9 9 15.7157 9 24C9 32.2843 15.7157 39 24 39ZM27.75 27C31.4779 27 34.5 23.9779 34.5 20.25C34.5 16.5221 31.4779 13.5 27.75 13.5C24.0221 13.5 21 16.5221 21 20.25C21 23.9779 24.0221 27 27.75 27Z" fill="url(#paint1_dark)"/>
+        </g>
+      </g>
+      <rect x="1" y="1" width="46" height="46" rx="11" stroke="url(#paint2_dark)" strokeWidth="2"/>
+    </g>
+    <defs>
+      <filter id="filter0_iii_dark" x="0" y="-3" width="48" height="54" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+        <feFlood floodOpacity="0" result="BackgroundImageFix"/>
+        <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+        <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+        <feOffset dy="-3"/>
+        <feGaussianBlur stdDeviation="1.5"/>
+        <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+        <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0"/>
+        <feBlend mode="normal" in2="shape" result="effect1_innerShadow_dark"/>
+        <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+        <feOffset dy="3"/>
+        <feGaussianBlur stdDeviation="1.5"/>
+        <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+        <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.1 0"/>
+        <feBlend mode="normal" in2="effect1_innerShadow_dark" result="effect2_innerShadow_dark"/>
+        <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+        <feMorphology radius="1" operator="erode" in="SourceAlpha" result="effect3_innerShadow_dark"/>
+        <feOffset/>
+        <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+        <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.2 0"/>
+        <feBlend mode="normal" in2="effect2_innerShadow_dark" result="effect3_innerShadow_dark"/>
+      </filter>
+      <filter id="filter1_d_dark" x="6" y="5.25" width="36" height="42" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+        <feFlood floodOpacity="0" result="BackgroundImageFix"/>
+        <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+        <feMorphology radius="1.5" operator="erode" in="SourceAlpha" result="effect1_dropShadow_dark"/>
+        <feOffset dy="2.25"/>
+        <feGaussianBlur stdDeviation="2.25"/>
+        <feComposite in2="hardAlpha" operator="out"/>
+        <feColorMatrix type="matrix" values="0 0 0 0 0.141176 0 0 0 0 0.141176 0 0 0 0 0.141176 0 0 0 0.1 0"/>
+        <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_dark"/>
+        <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_dark" result="shape"/>
+      </filter>
+      <linearGradient id="paint0_dark" x1="24" y1="5.96047e-07" x2="26" y2="48" gradientUnits="userSpaceOnUse">
+        <stop stopColor="white" stopOpacity="0"/>
+        <stop offset="1" stopColor="white" stopOpacity="0.12"/>
+      </linearGradient>
+      <linearGradient id="paint1_dark" x1="24" y1="9" x2="24" y2="39" gradientUnits="userSpaceOnUse">
+        <stop stopColor="white" stopOpacity="0.8"/>
+        <stop offset="1" stopColor="white" stopOpacity="0.5"/>
+      </linearGradient>
+      <linearGradient id="paint2_dark" x1="24" y1="0" x2="24" y2="48" gradientUnits="userSpaceOnUse">
+        <stop stopColor="white" stopOpacity="0.12"/>
+        <stop offset="1" stopColor="white" stopOpacity="0"/>
+      </linearGradient>
+      <clipPath id="clip0_dark">
+        <rect width="48" height="48" rx="12" fill="white"/>
+      </clipPath>
+    </defs>
+  </svg>
 );
 
-export const Logo = LogoIcon;
+const LogoLight = (props: React.ComponentProps<"svg">) => (
+  <svg width="32" height="32" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+    <g filter="url(#filter0_iii_light)">
+      <g clipPath="url(#clip0_light)">
+        <rect width="48" height="48" rx="12" fill="#0A0A0A"/>
+        <rect width="48" height="48" fill="url(#paint0_light)"/>
+        <g filter="url(#filter1_d_light)">
+          <path fillRule="evenodd" clipRule="evenodd" d="M24 39C32.2843 39 39 32.2843 39 24C39 15.7157 32.2843 9 24 9C15.7157 9 9 15.7157 9 24C9 32.2843 15.7157 39 24 39ZM27.75 27C31.4779 27 34.5 23.9779 34.5 20.25C34.5 16.5221 31.4779 13.5 27.75 13.5C24.0221 13.5 21 16.5221 21 20.25C21 23.9779 24.0221 27 27.75 27Z" fill="url(#paint1_light)"/>
+        </g>
+      </g>
+      <rect x="1" y="1" width="46" height="46" rx="11" stroke="url(#paint2_light)" strokeWidth="2"/>
+    </g>
+    <defs>
+      <filter id="filter0_iii_light" x="0" y="-3" width="48" height="54" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+        <feFlood floodOpacity="0" result="BackgroundImageFix"/>
+        <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+        <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+        <feOffset dy="-3"/>
+        <feGaussianBlur stdDeviation="1.5"/>
+        <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+        <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0"/>
+        <feBlend mode="normal" in2="shape" result="effect1_innerShadow_light"/>
+        <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+        <feOffset dy="3"/>
+        <feGaussianBlur stdDeviation="1.5"/>
+        <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+        <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.1 0"/>
+        <feBlend mode="normal" in2="effect1_innerShadow_light" result="effect2_innerShadow_light"/>
+        <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+        <feMorphology radius="1" operator="erode" in="SourceAlpha" result="effect3_innerShadow_light"/>
+        <feOffset/>
+        <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+        <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.2 0"/>
+        <feBlend mode="normal" in2="effect2_innerShadow_light" result="effect3_innerShadow_light"/>
+      </filter>
+      <filter id="filter1_d_light" x="6" y="5.25" width="36" height="42" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+        <feFlood floodOpacity="0" result="BackgroundImageFix"/>
+        <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+        <feMorphology radius="1.5" operator="erode" in="SourceAlpha" result="effect1_dropShadow_light"/>
+        <feOffset dy="2.25"/>
+        <feGaussianBlur stdDeviation="2.25"/>
+        <feComposite in2="hardAlpha" operator="out"/>
+        <feColorMatrix type="matrix" values="0 0 0 0 0.141176 0 0 0 0 0.141176 0 0 0 0 0.141176 0 0 0 0.1 0"/>
+        <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_light"/>
+        <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_light" result="shape"/>
+      </filter>
+      <linearGradient id="paint0_light" x1="24" y1="5.96047e-07" x2="26" y2="48" gradientUnits="userSpaceOnUse">
+        <stop stopColor="white" stopOpacity="0"/>
+        <stop offset="1" stopColor="white" stopOpacity="0.12"/>
+      </linearGradient>
+      <linearGradient id="paint1_light" x1="24" y1="9" x2="24" y2="39" gradientUnits="userSpaceOnUse">
+        <stop stopColor="white" stopOpacity="0.8"/>
+        <stop offset="1" stopColor="white" stopOpacity="0.5"/>
+      </linearGradient>
+      <linearGradient id="paint2_light" x1="24" y1="0" x2="24" y2="48" gradientUnits="userSpaceOnUse">
+        <stop stopColor="white" stopOpacity="0.12"/>
+        <stop offset="1" stopColor="white" stopOpacity="0"/>
+      </linearGradient>
+      <clipPath id="clip0_light">
+        <rect width="48" height="48" rx="12" fill="white"/>
+      </clipPath>
+    </defs>
+  </svg>
+);
+
+export function LogoIcon(props: React.ComponentProps<"svg">) {
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return <LogoDark {...props} />;
+  return resolvedTheme === "dark" ? <LogoDark {...props} /> : <LogoLight {...props} />;
+}
+
+export function Logo() {
+  return (
+    <span className="flex items-center gap-2">
+      <LogoIcon />
+      <span className="text-sm font-semibold text-foreground">CreemKit</span>
+    </span>
+  );
+}

@@ -1,13 +1,11 @@
-import { HeroSection } from "@/features/landing/components/hero-section";
-import { FeaturesSection } from "@/features/landing/components/features-section";
-import { Demo } from "@/components/demo";
+import FeaturesSection from '@/features/landing/components/features-section'
+import HeroSection from '@/features/landing/components/hero-section'
 
 export default function Page() {
   return (
     <>
       <HeroSection />
       <FeaturesSection />
-      <Demo />
     </>
-  );
+  )
 }

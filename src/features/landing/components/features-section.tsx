@@ -1,49 +1,189 @@
+import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { CreditCard, Database, KeyRound, Layout } from 'lucide-react'
+import {
+  ArrowUp,
+  CalendarCheck,
+  Globe,
+  Play,
+  Plus,
+  Signature,
+  Sparkles,
+  Target,
+} from 'lucide-react'
 
-export function FeaturesSection() {
-    return (
-        <section id="features">
-            <div className="py-24">
-                <div className="mx-auto w-full max-w-5xl px-6">
-                    <div>
-                        <h2 className="text-foreground max-w-2xl text-balance text-4xl font-semibold">Everything you need to ship a SaaS</h2>
-                    </div>
-                    <div className="mt-16 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        <Card
-                            data-soft
-                            className="overflow-hidden p-6">
-                            <KeyRound className="text-primary size-5" />
-                            <h3 className="text-foreground mt-5 text-lg font-semibold">Supabase Auth</h3>
-                            <p className="text-muted-foreground mt-3 text-balance">Email + OAuth login, session management, and protected routes via middleware — all pre-configured and ready to use.</p>
-                        </Card>
+const MESCHAC_AVATAR = 'https://avatars.githubusercontent.com/u/47919550?v=4'
+const BERNARD_AVATAR = 'https://avatars.githubusercontent.com/u/31113941?v=4'
+const THEO_AVATAR = 'https://avatars.githubusercontent.com/u/68236786?v=4'
+const GLODIE_AVATAR = 'https://avatars.githubusercontent.com/u/99137927?v=4'
 
-                        <Card
-                            data-soft
-                            className="group overflow-hidden px-6 pt-6">
-                            <CreditCard className="text-primary size-5" />
-                            <h3 className="text-foreground mt-5 text-lg font-semibold">Creem Payments</h3>
-                            <p className="text-muted-foreground mt-3 text-balance">Subscription billing, one-time purchases, and webhook handling pre-wired so you can start monetizing from day one.</p>
-                        </Card>
+export default function FeaturesSection() {
+  return (
+    <section>
+      <div className="py-24">
+        <div className="mx-auto w-full max-w-5xl px-6">
+          <div>
+            <h2 className="max-w-2xl text-4xl font-semibold text-balance text-foreground">
+              Empowering developers with AI-driven solutions
+            </h2>
+          </div>
+          <div className="mt-16 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <Card variant="soft" className="overflow-hidden p-6">
+              <Target className="size-5 text-primary" />
+              <h3 className="mt-5 text-lg font-semibold text-foreground">AI Code Generation</h3>
+              <p className="mt-3 text-balance text-muted-foreground">
+                Our advanced AI models transform natural language into production-ready code.
+              </p>
 
-                        <Card
-                            data-soft
-                            className="group overflow-hidden px-6 pt-6">
-                            <Database className="text-primary size-5" />
-                            <h3 className="text-foreground mt-5 text-lg font-semibold">Credits System</h3>
-                            <p className="text-muted-foreground mt-3 text-balance">Atomic balance operations, a transaction ledger, and race-condition-safe deductions built on Supabase RLS.</p>
-                        </Card>
+              <MeetingIllustration />
+            </Card>
 
-                        <Card
-                            data-soft
-                            className="overflow-hidden p-6 md:col-span-2 lg:col-span-1">
-                            <Layout className="text-primary size-5" />
-                            <h3 className="text-foreground mt-5 text-lg font-semibold">Feature-Based Architecture</h3>
-                            <p className="text-muted-foreground mt-3 text-balance">Co-located domain logic, self-documenting folder structure, and a clear pattern that is easy to extend as your product grows.</p>
-                        </Card>
-                    </div>
-                </div>
+            <Card variant="soft" className="group overflow-hidden px-6 pt-6">
+              <CalendarCheck className="size-5 text-primary" />
+              <h3 className="mt-5 text-lg font-semibold text-foreground">
+                Intelligent Code Review
+              </h3>
+              <p className="mt-3 text-balance text-muted-foreground">
+                Our AI analyzes your code for bugs, security issues, and optimization opportunities.
+              </p>
+
+              <CodeReviewIllustration />
+            </Card>
+            <Card variant="soft" className="group overflow-hidden px-6 pt-6">
+              <Sparkles className="size-5 text-primary" />
+              <h3 className="mt-5 text-lg font-semibold text-foreground">
+                Contextual AI Assistant
+              </h3>
+              <p className="mt-3 text-balance text-muted-foreground">
+                A personalized AI companion that understands your codebase and helps solve
+                complex...
+              </p>
+
+              <div className="-mx-2 -mt-2 mask-b-from-50 px-2 pt-2">
+                <AIAssistantIllustration />
+              </div>
+            </Card>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+const MeetingIllustration = () => {
+  return (
+    <Card aria-hidden className="mt-9 aspect-video p-4">
+      <div className="relative hidden h-fit">
+        <div className="absolute bottom-1.5 -left-1.5 rounded-md border-t border-red-700 bg-red-500 px-1 py-px text-[10px] font-medium text-white shadow-md shadow-red-500/35">
+          PDF
+        </div>
+        <div className="h-10 w-8 rounded-md border bg-gradient-to-b from-zinc-100 to-zinc-200"></div>
+      </div>
+      <div className="mb-0.5 text-sm font-semibold">AI Strategy Meeting</div>
+      <div className="mb-4 flex gap-2 text-sm">
+        <span className="text-muted-foreground">2:30 - 3:45 PM</span>
+      </div>
+      <div className="mb-2 flex -space-x-1.5">
+        <div className="flex -space-x-1.5">
+          {[
+            { src: MESCHAC_AVATAR, alt: 'Méschac Irung' },
+            { src: BERNARD_AVATAR, alt: 'Bernard Ngandu' },
+            { src: THEO_AVATAR, alt: 'Théo Balick' },
+            { src: GLODIE_AVATAR, alt: 'Glodie Lukose' },
+          ].map((avatar, index) => (
+            <div
+              key={index}
+              className="size-7 rounded-full border bg-background p-0.5 shadow shadow-zinc-950/5"
+            >
+              <img
+                className="aspect-square rounded-full object-cover"
+                src={avatar.src}
+                alt={avatar.alt}
+                height="460"
+                width="460"
+              />
             </div>
-        </section>
-    )
+          ))}
+        </div>
+      </div>
+      <div className="text-sm font-medium text-muted-foreground">ML Pipeline Discussion</div>
+    </Card>
+  )
+}
+
+const CodeReviewIllustration = () => {
+  return (
+    <div aria-hidden className="relative mt-6">
+      <Card className="aspect-video w-4/5 translate-y-4 p-3 transition-transform duration-200 ease-in-out group-hover:-rotate-3">
+        <div className="mb-3 flex items-center gap-2">
+          <div className="size-6 rounded-full border bg-background p-0.5 shadow shadow-zinc-950/5">
+            <img
+              className="aspect-square rounded-full object-cover"
+              src={MESCHAC_AVATAR}
+              alt="M Irung"
+              height="460"
+              width="460"
+            />
+          </div>
+          <span className="text-sm font-medium text-muted-foreground">Méschac Irung</span>
+
+          <span className="text-xs text-muted-foreground/75">2m</span>
+        </div>
+
+        <div className="ml-8 space-y-2">
+          <div className="h-2 rounded-full bg-foreground/10"></div>
+          <div className="h-2 w-3/5 rounded-full bg-foreground/10"></div>
+          <div className="h-2 w-1/2 rounded-full bg-foreground/10"></div>
+        </div>
+
+        <Signature className="mt-3 ml-8 size-5" />
+      </Card>
+      <Card className="absolute -top-4 right-0 flex aspect-3/5 w-2/5 translate-y-4 p-2 transition-transform duration-200 ease-in-out group-hover:rotate-3">
+        <div className="m-auto flex size-10 rounded-full bg-foreground/5">
+          <Play className="m-auto size-4 fill-foreground/50 stroke-foreground/50" />
+        </div>
+      </Card>
+    </div>
+  )
+}
+
+const AIAssistantIllustration = () => {
+  return (
+    <Card
+      aria-hidden
+      className="mt-6 aspect-video translate-y-4 p-4 pb-6 transition-transform duration-200 group-hover:translate-y-0"
+    >
+      <div className="w-fit">
+        <Sparkles className="size-3.5 fill-purple-300 stroke-purple-300" />
+        <p className="mt-2 line-clamp-2 text-sm">
+          How can I optimize my neural network to reduce inference time while maintaining accuracy?
+        </p>
+      </div>
+      <div className="-mx-3 mt-3 -mb-3 space-y-3 rounded-lg bg-foreground/5 p-3">
+        <div className="text-sm text-muted-foreground">Ask AI Assistant</div>
+
+        <div className="flex justify-between">
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              className="size-7 rounded-2xl bg-transparent shadow-none"
+            >
+              <Plus />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="size-7 rounded-2xl bg-transparent shadow-none"
+            >
+              <Globe />
+            </Button>
+          </div>
+
+          <Button size="icon" className="size-7 rounded-2xl bg-black">
+            <ArrowUp strokeWidth={3} />
+          </Button>
+        </div>
+      </div>
+    </Card>
+  )
 }

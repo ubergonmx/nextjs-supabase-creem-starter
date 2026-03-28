@@ -126,6 +126,7 @@ export default function HeroSection() {
                     alt="app screen"
                     width="2700"
                     height="1440"
+                    priority
                   />
                   <Image
                     className="relative z-2 aspect-15/8 rounded-2xl border border-border/25 dark:hidden"
@@ -133,6 +134,7 @@ export default function HeroSection() {
                     alt="app screen"
                     width="2700"
                     height="1440"
+                    priority
                   />
                 </div>
               </div>

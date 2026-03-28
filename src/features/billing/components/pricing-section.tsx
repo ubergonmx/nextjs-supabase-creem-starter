@@ -13,7 +13,7 @@ import { IconCheck } from '@tabler/icons-react'
 export function PricingSection() {
   return (
     <section className="py-16 md:py-32">
-      <div className="mx-auto max-w-6xl px-6">
+      <div className="mx-auto max-w-5xl px-6">
         <div className="space-y-6">
           <h1 className="text-4xl font-semibold lg:text-5xl">Pricing</h1>
           <p className="max-w-2xl text-muted-foreground">

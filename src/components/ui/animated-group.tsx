@@ -116,13 +116,22 @@ function AnimatedGroup({
   const itemVariants = variants?.item || selectedVariants.item
 
   const MotionComponent = React.useMemo(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    () => motion.create(as as any),
+    () =>
+      motion.create(as as string) as React.ComponentType<{
+        initial?: string
+        animate?: string
+        variants?: Variants
+        className?: string
+        children?: ReactNode
+      }>,
     [as]
   )
   const MotionChild = React.useMemo(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    () => motion.create(asChild as any),
+    () =>
+      motion.create(asChild as string) as React.ComponentType<{
+        variants?: Variants
+        children?: ReactNode
+      }>,
     [asChild]
   )
 

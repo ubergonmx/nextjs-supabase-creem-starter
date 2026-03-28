@@ -2,7 +2,7 @@ export const SupabaseFull = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     aria-label="Vercel logotype"
-    class="mx-auto h-4 w-full"
+    className="mx-auto h-4 w-full"
     viewBox="0 0 262 52"
   >
     <path

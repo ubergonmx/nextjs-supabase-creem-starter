@@ -8,9 +8,11 @@ import { cn } from '@/lib/utils'
 import { useScroll } from 'motion/react'
 
 const menuItems = [
-  { name: 'Features', href: '#features' }, // must fix, what if im not in landing page?
+  { name: 'Features', href: '/#features' },
   { name: 'Pricing', href: '/pricing' },
 ]
+
+export const navLinks = menuItems.map((item) => ({ label: item.name, href: item.href }))
 
 export const Header = () => {
   const [menuState, setMenuState] = React.useState(false)

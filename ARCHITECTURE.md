@@ -116,7 +116,26 @@ supabase/
     ├── 001_profiles.sql               # profiles + auth trigger
     ├── 002_subscriptions.sql          # Creem subscription tracking
     └── 003_credits.sql                # wallet + ledger
+
+tests/                                 # App-level and cross-feature test suites
+├── integration/                       # Multi-feature contracts (auth + billing + credits)
+└── e2e/                               # Playwright user journeys across route groups
 ```
+
+## Testing Strategy
+
+Use a hybrid testing layout so ownership is clear and suites scale with the codebase.
+
+- Colocate unit and component tests with the feature they validate (`src/features/**`) and with shared UI in `src/components/**`.
+- Keep cross-feature integration tests in `tests/integration/` when behavior spans multiple domains.
+- Keep end-to-end tests in `tests/e2e/` to validate full user journeys at the app boundary.
+
+### Example Test Paths
+
+- `src/features/auth/components/login-form.test.tsx`
+- `src/features/billing/actions/create-checkout.test.ts`
+- `tests/integration/subscription-lifecycle.test.ts`
+- `tests/e2e/signup-to-upgrade.spec.ts`
 
 ## Principles
 
@@ -127,6 +146,7 @@ supabase/
 | `lib/` = zero business logic     | Only infrastructure clients (Supabase, Creem SDK)                             |
 | `components/ui/` = shadcn only   | No feature logic leaks into shared UI primitives                              |
 | Webhooks co-located with billing | `features/billing/webhooks/` not `app/api/webhooks/`                          |
+| Tests follow feature boundaries  | Unit/component tests are colocated; integration + e2e tests live in `tests/` |
 
 ## Why Feature-Based?
 

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import React from "react";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "motion/react";
+import { useUser } from "@/features/auth/hooks/use-user";
 
 const menuItems = [
   { name: "Features", href: "/#features" },
@@ -19,6 +20,7 @@ export const navLinks = menuItems.map((item) => ({
 
 export const Header = () => {
   const [menuState, setMenuState] = React.useState(false);
+  const { user, loading } = useUser();
 
   const close = () => setMenuState(false);
 
@@ -73,21 +75,37 @@ export const Header = () => {
               {/* divider */}
               <div className="mx-3 hidden h-6 w-px bg-muted lg:block"></div>
 
-              <Button
-                variant="outline"
-                size="default"
-                render={<Link href="/login" />}
-                nativeButton={false}
-              >
-                <span>Login</span>
-              </Button>
-              <Button
-                size="default"
-                render={<Link href="/signup" />}
-                nativeButton={false}
-              >
-                <span>Sign Up</span>
-              </Button>
+              {!loading && (
+                <>
+                  {user ? (
+                    <Button
+                      size="default"
+                      render={<Link href="/dashboard" />}
+                      nativeButton={false}
+                    >
+                      <span>Dashboard</span>
+                    </Button>
+                  ) : (
+                    <>
+                      <Button
+                        variant="outline"
+                        size="default"
+                        render={<Link href="/login" />}
+                        nativeButton={false}
+                      >
+                        <span>Login</span>
+                      </Button>
+                      <Button
+                        size="default"
+                        render={<Link href="/signup" />}
+                        nativeButton={false}
+                      >
+                        <span>Sign Up</span>
+                      </Button>
+                    </>
+                  )}
+                </>
+              )}
             </div>
 
             {/* Hamburger */}
@@ -159,21 +177,37 @@ export const Header = () => {
                   transition={{ duration: 0.2, delay: 0.2, ease: "easeOut" }}
                   className="mt-6 flex flex-col gap-2.5"
                 >
-                  <Button
-                    variant="outline"
-                    className="w-full"
-                    render={<Link href="/login" onClick={close} />}
-                    nativeButton={false}
-                  >
-                    Login
-                  </Button>
-                  <Button
-                    className="w-full"
-                    render={<Link href="/signup" onClick={close} />}
-                    nativeButton={false}
-                  >
-                    Sign Up
-                  </Button>
+                  {!loading && (
+                    <>
+                      {user ? (
+                        <Button
+                          className="w-full"
+                          render={<Link href="/dashboard" onClick={close} />}
+                          nativeButton={false}
+                        >
+                          Dashboard
+                        </Button>
+                      ) : (
+                        <>
+                          <Button
+                            variant="outline"
+                            className="w-full"
+                            render={<Link href="/login" onClick={close} />}
+                            nativeButton={false}
+                          >
+                            Login
+                          </Button>
+                          <Button
+                            className="w-full"
+                            render={<Link href="/signup" onClick={close} />}
+                            nativeButton={false}
+                          >
+                            Sign Up
+                          </Button>
+                        </>
+                      )}
+                    </>
+                  )}
                 </motion.div>
               </div>
             </motion.div>

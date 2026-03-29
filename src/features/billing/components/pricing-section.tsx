@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { IconCheck } from '@tabler/icons-react'
+import { CheckoutButton } from '@/features/billing/components/checkout-button'
 
 export function PricingSection() {
   return (
@@ -50,7 +51,7 @@ export function PricingSection() {
               <Button
                 variant="outline"
                 className="w-full"
-                render={<Link href="" />}
+                render={<Link href="/signup" />}
                 nativeButton={false}
               >
                 Get Started
@@ -92,9 +93,9 @@ export function PricingSection() {
             </CardContent>
 
             <CardFooter className="mt-auto border-t-0 bg-transparent">
-              <Button className="w-full" render={<Link href="" />} nativeButton={false}>
+              <CheckoutButton productId={process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_PRO ?? ""}>
                 Get Started
-              </Button>
+              </CheckoutButton>
             </CardFooter>
           </Card>
 
@@ -123,14 +124,12 @@ export function PricingSection() {
             </CardContent>
 
             <CardFooter className="mt-auto border-t-0 bg-transparent">
-              <Button
+              <CheckoutButton
+                productId={process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_BUSINESS ?? ""}
                 variant="outline"
-                className="w-full"
-                render={<Link href="" />}
-                nativeButton={false}
               >
                 Get Started
-              </Button>
+              </CheckoutButton>
             </CardFooter>
           </Card>
         </div>

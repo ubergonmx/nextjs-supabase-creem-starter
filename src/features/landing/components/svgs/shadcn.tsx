@@ -1,7 +1,7 @@
 export const ShadcnFull = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 870 256"
+    viewBox="0 0 1045 256"
     fill="none"
     aria-label="shadcn logotype"
     {...props}
@@ -30,10 +30,10 @@ export const ShadcnFull = (props: React.SVGProps<SVGSVGElement>) => (
     </g>
     <text
       x="280"
-      y="180"
+      y="200"
       fill="currentColor"
       fontFamily="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
-      fontSize="160"
+      fontSize="220"
       fontWeight="700"
       letterSpacing="-3"
     >

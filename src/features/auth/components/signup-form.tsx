@@ -108,6 +108,9 @@ export function SignupForm({
               {state?.error && (
                 <p className="text-sm text-destructive">{state.error}</p>
               )}
+              {state?.message && (
+                <p className="text-sm text-green-600">{state.message}</p>
+              )}
               <Field>
                 <Button type="submit" disabled={pending}>
                   {pending ? "Creating account…" : "Create Account"}

@@ -1,5 +1,3 @@
-import * as z from "zod";
-
 // ---------- Creem webhook event types ----------
 export type CreemWebhookEventType =
   | "checkout.completed"
@@ -11,37 +9,6 @@ export type CreemWebhookEventType =
   | "subscription.paused"
   | "subscription.update"
   | "refund.created";
-
-// ---------- Zod schemas for webhook payloads ----------
-export const creemCustomerSchema = z.object({
-  id: z.string(),
-  email: z.string().email(),
-  name: z.string().optional(),
-});
-
-export const creemSubscriptionSchema = z.object({
-  id: z.string(),
-  customer: creemCustomerSchema,
-  product_id: z.string(),
-  status: z.string(),
-  current_period_start: z.string().optional(),
-  current_period_end: z.string().optional(),
-  cancel_at_period_end: z.boolean().optional(),
-  metadata: z.record(z.string(), z.string()).optional(),
-});
-
-export const creemCheckoutSchema = z.object({
-  id: z.string(),
-  customer: creemCustomerSchema,
-  subscription: creemSubscriptionSchema.optional(),
-  product_id: z.string(),
-  metadata: z.record(z.string(), z.string()).optional(),
-});
-
-export const creemWebhookEventSchema = z.object({
-  event_type: z.string(),
-  object: z.unknown(),
-});
 
 // ---------- App-level types ----------
 export type SubscriptionStatus =

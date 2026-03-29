@@ -3,9 +3,11 @@ import {
   creemWebhookEventSchema,
   creemCheckoutSchema,
   creemSubscriptionSchema,
-  PLANS,
-} from "../types";
+} from "../schema";
+import { PLANS } from "../types";
 import type { CreemWebhookEventType, SubscriptionStatus } from "../types";
+
+const ONE_TIME_CREDITS_PURCHASE_AMOUNT = 500;
 
 function mapCreemStatus(status: string): SubscriptionStatus {
   switch (status) {
@@ -29,11 +31,19 @@ function creditsForProductId(productId: string): number {
   if (productId === process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_PRO) {
     return PLANS.pro.credits;
   }
+
   if (productId === process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_BUSINESS) {
     return -1; // unlimited — no top-up needed
   }
-  // credits product or unknown — default to 500
-  return 500;
+
+  if (productId === process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_CREDITS) {
+    return ONE_TIME_CREDITS_PURCHASE_AMOUNT;
+  }
+
+  console.warn(
+    `creditsForProductId: unknown product_id "${productId}" — no credits granted`,
+  );
+  return 0;
 }
 
 export async function handleWebhookEvent(rawBody: string): Promise<void> {
@@ -95,29 +105,16 @@ async function handleCheckoutCompleted(object: unknown): Promise<void> {
     // One-time credit purchase
     const credits = creditsForProductId(checkout.product_id);
     if (credits > 0) {
-      const { data: existing } = await admin
-        .from("credits")
-        .select("balance")
-        .eq("user_id", userId)
-        .single();
-
-      if (existing) {
-        await admin
-          .from("credits")
-          .update({ balance: existing.balance + credits })
-          .eq("user_id", userId);
-      } else {
-        await admin
-          .from("credits")
-          .insert({ user_id: userId, balance: credits });
-      }
-
-      await admin.from("credit_transactions").insert({
-        user_id: userId,
-        amount: credits,
-        type: "purchase",
-        description: `Purchased ${credits} credits`,
+      const { error } = await admin.rpc("add_credits", {
+        p_user_id: userId,
+        p_amount: credits,
+        p_type: "purchase",
+        p_description: `Purchased ${credits} credits`,
       });
+
+      if (error) {
+        throw new Error(`add_credits RPC failed: ${error.message}`);
+      }
     }
   }
 }
@@ -161,29 +158,16 @@ async function handleSubscriptionUpsert(
   if (eventType === "subscription.paid") {
     const credits = creditsForProductId(sub.product_id);
     if (credits > 0) {
-      const { data: existing } = await admin
-        .from("credits")
-        .select("balance")
-        .eq("user_id", profile.id)
-        .single();
-
-      if (existing) {
-        await admin
-          .from("credits")
-          .update({ balance: existing.balance + credits })
-          .eq("user_id", profile.id);
-      } else {
-        await admin
-          .from("credits")
-          .insert({ user_id: profile.id, balance: credits });
-      }
-
-      await admin.from("credit_transactions").insert({
-        user_id: profile.id,
-        amount: credits,
-        type: "topup",
-        description: `Monthly credit top-up`,
+      const { error } = await admin.rpc("add_credits", {
+        p_user_id: profile.id,
+        p_amount: credits,
+        p_type: "topup",
+        p_description: "Monthly credit top-up",
       });
+
+      if (error) {
+        throw new Error(`add_credits RPC failed: ${error.message}`);
+      }
     }
   }
 }
@@ -227,25 +211,14 @@ async function handleRefundCreated(object: unknown): Promise<void> {
   const refundAmount = typeof refund.amount === "number" ? refund.amount : 0;
 
   if (refundAmount > 0) {
-    const { data: existing } = await admin
-      .from("credits")
-      .select("balance")
-      .eq("user_id", profile.id)
-      .single();
+    const { error } = await admin.rpc("deduct_credits", {
+      p_user_id: profile.id,
+      p_amount: refundAmount,
+      p_description: "Refund processed",
+    });
 
-    if (existing) {
-      const newBalance = Math.max(0, existing.balance - refundAmount);
-      await admin
-        .from("credits")
-        .update({ balance: newBalance })
-        .eq("user_id", profile.id);
-
-      await admin.from("credit_transactions").insert({
-        user_id: profile.id,
-        amount: -refundAmount,
-        type: "refund",
-        description: "Refund processed",
-      });
+    if (error) {
+      throw new Error(`deduct_credits RPC failed: ${error.message}`);
     }
   }
 }

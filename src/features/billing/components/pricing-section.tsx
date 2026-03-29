@@ -12,6 +12,9 @@ import { IconCheck } from '@tabler/icons-react'
 import { CheckoutButton } from '@/features/billing/components/checkout-button'
 
 export function PricingSection() {
+  const proProductId = process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_PRO
+  const businessProductId = process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_BUSINESS
+
   return (
     <section className="py-16 md:py-32">
       <div className="mx-auto max-w-5xl px-6">
@@ -93,9 +96,13 @@ export function PricingSection() {
             </CardContent>
 
             <CardFooter className="mt-auto border-t-0 bg-transparent">
-              <CheckoutButton productId={process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_PRO ?? ""}>
-                Get Started
-              </CheckoutButton>
+              {proProductId ? (
+                <CheckoutButton productId={proProductId}>Get Started</CheckoutButton>
+              ) : (
+                <Button className="w-full" disabled>
+                  Product not configured
+                </Button>
+              )}
             </CardFooter>
           </Card>
 
@@ -124,12 +131,15 @@ export function PricingSection() {
             </CardContent>
 
             <CardFooter className="mt-auto border-t-0 bg-transparent">
-              <CheckoutButton
-                productId={process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_BUSINESS ?? ""}
-                variant="outline"
-              >
-                Get Started
-              </CheckoutButton>
+              {businessProductId ? (
+                <CheckoutButton productId={businessProductId} variant="outline">
+                  Get Started
+                </CheckoutButton>
+              ) : (
+                <Button variant="outline" className="w-full" disabled>
+                  Product not configured
+                </Button>
+              )}
             </CardFooter>
           </Card>
         </div>

@@ -11,6 +11,7 @@ import {
 } from "@/lib/creem/client";
 import { redirect } from "next/navigation";
 import type { Subscription } from "../types";
+import { createCheckoutSchema } from "../schema";
 
 const APP_URL =
   process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
@@ -34,6 +35,10 @@ function mapRow(row: Record<string, unknown>): Subscription {
 export async function createCheckoutSession(
   productId: string,
 ): Promise<void> {
+  if (!createCheckoutSchema.safeParse({ productId }).success) {
+    redirect("/pricing?error=product_not_configured");
+  }
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -123,12 +128,12 @@ export async function cancelUserSubscription(
       await supabase
         .from("subscriptions")
         .update({ cancel_at_period_end: true })
-        .eq("user_id", user.id);
+        .eq("creem_subscription_id", sub.creem_subscription_id);
     } else {
       await supabase
         .from("subscriptions")
         .update({ status: "canceled" })
-        .eq("user_id", user.id);
+        .eq("creem_subscription_id", sub.creem_subscription_id);
     }
     return {};
   } catch (e) {
@@ -158,7 +163,7 @@ export async function resumeUserSubscription(): Promise<{ error?: string }> {
     await supabase
       .from("subscriptions")
       .update({ cancel_at_period_end: false, status: "active" })
-      .eq("user_id", user.id);
+      .eq("creem_subscription_id", sub.creem_subscription_id);
     return {};
   } catch (e) {
     return { error: (e as Error).message };
@@ -184,7 +189,16 @@ export async function upgradeUserSubscription(
 
   if (!sub?.creem_subscription_id) redirect("/dashboard/billing");
 
-  await upgradeSubscription(sub.creem_subscription_id, newProductId);
+  try {
+    await upgradeSubscription(sub.creem_subscription_id, newProductId);
+  } catch (e) {
+    const message =
+      e instanceof Error ? e.message : "Unable to upgrade subscription";
+    redirect(
+      `/dashboard/billing?error=${encodeURIComponent(message)}`,
+    );
+  }
+
   // Actual status change comes back via webhook
   redirect("/dashboard/billing?upgraded=1");
 }
@@ -211,7 +225,7 @@ export async function pauseUserSubscription(): Promise<{ error?: string }> {
     await supabase
       .from("subscriptions")
       .update({ status: "paused" })
-      .eq("user_id", user.id);
+      .eq("creem_subscription_id", sub.creem_subscription_id);
     return {};
   } catch (e) {
     return { error: (e as Error).message };

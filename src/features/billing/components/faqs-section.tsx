@@ -38,7 +38,7 @@ export function FaqsSection() {
       id: 'item-5',
       question: 'How do I deploy this to production?',
       answer:
-        'Click the "Deploy with Vercel" button in the README, set your environment variables (Supabase and Creem keys), and you\'re live. The entire process takes under 5 minutes.',
+        'Click the "Deploy with Vercel" button in the README, set your environment variables (Supabase and Creem keys), create your products in Creem, and you\'re live. Plan for 15–30 minutes the first time.',
     },
   ]
 

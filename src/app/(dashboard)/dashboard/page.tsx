@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { AppSidebar } from "@/features/dashboard/components/app-sidebar";
 import { ChartAreaInteractive } from "@/features/dashboard/components/chart-area-interactive";
 import { DataTable } from "@/features/dashboard/components/data-table";
@@ -6,6 +7,11 @@ import { SiteHeader } from "@/features/dashboard/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 import data from "./data.json";
+
+export const metadata: Metadata = {
+  title: "Overview",
+  description: "View your key metrics, usage data, and recent activity.",
+};
 
 export default function Page() {
   return (

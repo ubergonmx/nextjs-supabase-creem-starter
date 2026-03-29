@@ -8,9 +8,43 @@ import Script from 'next/script'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
 
+const siteName = 'CreemKit'
+const siteDescription =
+  'Production-ready Next.js starter with Supabase auth and Creem payments pre-integrated.'
+
+function getMetadataBase() {
+  const fallbackUrl = 'http://localhost:3000'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? fallbackUrl
+
+  try {
+    return new URL(appUrl)
+  } catch {
+    return new URL(fallbackUrl)
+  }
+}
+
 export const metadata: Metadata = {
+  metadataBase: getMetadataBase(),
+  applicationName: siteName,
+  title: siteName,
+  description: siteDescription,
+  alternates: {
+    canonical: '/',
+  },
   icons: {
     icon: '/favicon.svg',
+  },
+  openGraph: {
+    type: 'website',
+    siteName,
+    title: siteName,
+    description: siteDescription,
+    url: '/',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: siteName,
+    description: siteDescription,
   },
 }
 

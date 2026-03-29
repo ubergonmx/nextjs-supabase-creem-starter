@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import { SignupForm } from "@/features/auth/components/signup-form";
 import { Logo } from "@/components/logo";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Create account",
+  description: "Create your CreemKit account and start selling with Supabase and Creem.",
+};
 
 export default function SignupPage() {
   return (

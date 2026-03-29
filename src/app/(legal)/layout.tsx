@@ -1,7 +1,16 @@
+import type { Metadata } from 'next'
 import { Header } from '@/components/header'
 import { FooterSection } from '@/features/landing/components/footer-section'
 
-export default function MarketingLayout({ children }: { children: React.ReactNode }) {
+export const metadata: Metadata = {
+  title: {
+    template: '%s | Legal | CreemKit',
+    default: 'Legal | CreemKit',
+  },
+  description: 'Legal documents for CreemKit, including privacy policy and terms of service.',
+}
+
+export default function LegalLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Header />

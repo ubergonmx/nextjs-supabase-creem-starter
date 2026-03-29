@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import { LoginForm } from "@/features/auth/components/login-form";
 import { Logo } from "@/components/logo";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Log in",
+  description: "Access your CreemKit account to manage subscriptions and credits.",
+};
 
 export default function LoginPage() {
   return (

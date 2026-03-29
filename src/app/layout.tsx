@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 
 import './globals.css'
@@ -6,6 +7,12 @@ import { cn } from '@/lib/utils'
 import Script from 'next/script'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
+
+export const metadata: Metadata = {
+  icons: {
+    icon: '/favicon.svg',
+  },
+}
 
 export default function RootLayout({
   children,

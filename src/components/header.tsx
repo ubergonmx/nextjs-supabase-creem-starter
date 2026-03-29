@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { Logo } from "@/components/logo";
-import { Menu, X } from "lucide-react";
+import { IconMenu2, IconX } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import React from "react";
 import { cn } from "@/lib/utils";
@@ -96,7 +96,7 @@ export const Header = () => {
               aria-label={menuState ? "Close Menu" : "Open Menu"}
               className="relative z-20 -m-2.5 -mr-4 block cursor-pointer p-2.5 lg:hidden"
             >
-              <Menu
+              <IconMenu2
                 className={cn(
                   "size-6 transition-all duration-200",
                   menuState
@@ -104,7 +104,7 @@ export const Header = () => {
                     : "scale-100 rotate-0 opacity-100",
                 )}
               />
-              <X
+              <IconX
                 className={cn(
                   "absolute inset-0 m-auto size-6 transition-all duration-200",
                   menuState

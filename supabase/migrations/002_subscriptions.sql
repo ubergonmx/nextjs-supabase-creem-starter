@@ -27,7 +27,7 @@ create table if not exists public.subscriptions (
 );
 
 create index subscriptions_user_id_idx on public.subscriptions (user_id);
-create index subscriptions_creem_subscription_id_idx on public.subscriptions (creem_subscription_id);
+-- creem_subscription_id unique constraint already creates an implicit index; no explicit one needed
 
 -- Auto-update updated_at
 create trigger subscriptions_updated_at
@@ -42,9 +42,7 @@ alter table public.subscriptions enable row level security;
 
 create policy "Users can view their own subscription"
   on public.subscriptions for select
-  using (auth.uid() = user_id);
+  using ((select auth.uid()) = user_id);
 
--- Only the service role can insert/update subscriptions (via webhooks)
-create policy "Service role can manage subscriptions"
-  on public.subscriptions for all
-  using (auth.role() = 'service_role');
+-- Note: service_role bypasses RLS entirely — no explicit policy needed
+alter table public.subscriptions force row level security;

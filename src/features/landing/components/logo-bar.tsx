@@ -1,12 +1,12 @@
 import { InfiniteSlider } from '@/components/ui/infinite-slider'
 import { ProgressiveBlur } from '@/components/ui/progressive-blur'
-import { CreemFull } from './svgs/creem'
-import { BaseUI } from './svgs/baseui'
-import { OXCFull } from './svgs/oxc'
-import { ShadcnFull } from './svgs/shadcn'
-import { NextjsFull } from './svgs/nextjs'
-import { SupabaseFull } from './svgs/supabase'
-import { VercelFull } from './svgs/vercel'
+import { CreemFull } from './svg/creem'
+import { BaseUI } from './svg/baseui'
+import { OXCFull } from './svg/oxc'
+import { ShadcnFull } from './svg/shadcn'
+import { NextjsFull } from './svg/nextjs'
+import { SupabaseFull } from './svg/supabase'
+import { VercelFull } from './svg/vercel'
 
 export function LogoBar() {
   return (

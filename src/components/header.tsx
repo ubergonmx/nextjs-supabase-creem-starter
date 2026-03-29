@@ -14,18 +14,30 @@ const menuItems = [
 
 export const navLinks = menuItems.map((item) => ({ label: item.name, href: item.href }))
 
-export const Header = () => {
+type HeaderProps = {
+  blurTrigger?: 'progress' | 'pixels'
+}
+
+export const Header = ({ blurTrigger = 'progress' }: HeaderProps) => {
   const [menuState, setMenuState] = React.useState(false)
   const [scrolled, setScrolled] = React.useState(false)
 
-  const { scrollYProgress } = useScroll()
+  const { scrollY, scrollYProgress } = useScroll()
 
   React.useEffect(() => {
-    const unsubscribe = scrollYProgress.on('change', (latest) => {
-      setScrolled(latest > 0.05)
-    })
+    if (blurTrigger === 'pixels') {
+      const updateScrolled = (latest: number) => setScrolled(latest > 4)
+
+      updateScrolled(scrollY.get())
+      const unsubscribe = scrollY.on('change', updateScrolled)
+      return () => unsubscribe()
+    }
+
+    const updateScrolled = (latest: number) => setScrolled(latest > 0.05)
+    updateScrolled(scrollYProgress.get())
+    const unsubscribe = scrollYProgress.on('change', updateScrolled)
     return () => unsubscribe()
-  }, [scrollYProgress])
+  }, [blurTrigger, scrollY, scrollYProgress])
 
   return (
     <header>

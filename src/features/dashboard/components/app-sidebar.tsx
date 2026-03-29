@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 
 import { NavMain } from "@/features/dashboard/components/nav-main";
 import { NavSecondary } from "@/features/dashboard/components/nav-secondary";
@@ -70,7 +71,11 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
           <SidebarMenuItem>
             <SidebarMenuButton
               className="data-[slot=sidebar-menu-button]:p-1.5!"
-              render={<a href="/dashboard" />}
+              render={
+                <Link href="/dashboard">
+                  <span className="sr-only">Dashboard</span>
+                </Link>
+              }
             >
               <IconInnerShadowTop className="size-5!" />
               <span className="text-base font-semibold">CreemKit</span>

@@ -137,5 +137,13 @@ export function verifyWebhookSignature(
     .createHmac("sha256", process.env.CREEM_WEBHOOK_SECRET!)
     .update(rawBody)
     .digest("hex");
-  return expected === signature;
+
+  const expectedBuf = Buffer.from(expected, "hex");
+  const signatureBuf = Buffer.from(signature, "hex");
+
+  if (expectedBuf.length !== signatureBuf.length) {
+    return false;
+  }
+
+  return crypto.timingSafeEqual(expectedBuf, signatureBuf);
 }

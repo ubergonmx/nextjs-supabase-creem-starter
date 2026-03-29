@@ -94,13 +94,51 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Setup
 
-### 1. Set up Supabase
+### 1. Clone and run locally
+```bash
+git clone 
+```
+
+```bash
+cp .env.example .env.local
+```
+
+### 2. Set up Supabase
 
 1. Create a new [Supabase project](https://database.new)
+  BqKXZJN3QsvUUdpb
+2. Set these values in `.env.local`:
+  - `NEXT_PUBLIC_SUPABASE_URL`: Copy this in **Project Overview** (should look like `https://urcryetpnmgoatkitnumxb.supabase.co`)
+  - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`:  Copy this in **Project Overview** (open dropdown) or go to **Project Settings** (bottom of left sidebar) > **API Keys** > copy the key under **Publishable key** (starts with `sb_publishable_...`). If you're using legacy, copy `anon public` key (starts with `eyJ...`) in "Legacy anon, service_role API keys" tab.
+  - `SUPABASE_SERVICE_ROLE_KEY`: Same page, copy the key under **Secret keys** (starts with `sb_secret_***`). If you're using legacy, copy `service_role` secret key.
+3. Run the SQL migrations
+  - Go to **SQL Editor** in the left sidebar (terminal icon)
+  - Copy-paste and run each file in `supabase/migrations/` in order:
+    - `001_profiles.sql`
+    - `002_subscriptions.sql`
+    - `003_credits.sql`
+  - If you prefer using the Supabase CLI, run `supabase db push` 
+4. Enable auth providers:
+  - Go to **Authentication** (left sidebar, lock icon) > under **CONFIGURATION** , click **Sign In / Providers**
+  - Under **Auth Providers**, enable sign in of the following:
+    - **Google**: 
+      - Enabling should show a right sidebar, copy **Callback URL (for OAuth)** (should look like `https://urcryetpnmgoatkitnumxb.supabase.co/auth/v1/callback`)
+      - Create an OAuth app in [Google Cloud Console](https://console.cloud.google.com/apis/credentials) (setup Consent screen if you haven't already). During creation, under **Authorized redirect URIs**, click "+ Add URI" and paste the callback URL.
+      - Click "Create", download JSON for backup and copy the client ID and secret into the Supabase sidebar, then save.
+    - **GitHub**: 
+      - Create an OAuth app in [GitHub Developer Settings](https://github.com/settings/developers) 
+      - Copy-paste redirect URL from the Supabase sidebar (should look like `https://urcryetpnmgoatkitnumxb.supabase.co/auth/v1/callback`) into the GitHub app's **Authorization callback URL** field, then save.
+      - After saving, copy the client ID and secret into the Supabase sidebar, then save.
+5. Set redirect URL:
+  - Still in the Authentication secondary sidebar, click **URL Configuration** (under CONFIGURATION)
+  - Under **Redirect URLs**, click **Add URL**
+  - Add: `http://localhost:3000/auth/callback`
+  - (You'll come back and add your production URL after deploying -- see step 5 below)
+
 
 <!-- TODO: remaining Supabase steps -->
 
-### 2. Set up Creem
+### 3. Set up Creem
 
 1. Create an account at [creem.io](https://www.creem.io) or, if you don't have an existing store, [create a new one](https://www.creem.io/dashboard/create)
 2. Enable **Test Mode** in the bottom-left of the sidebar
@@ -133,7 +171,7 @@ Fill in `.env.local` with your credentials:
 | Variable                               | Where to find it                  |
 | -------------------------------------- | --------------------------------- |
 | `NEXT_PUBLIC_SUPABASE_URL`             | Supabase → Project Settings → API |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY`        | Supabase → Project Settings → API |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`        | Supabase → Project Settings → API |
 | `SUPABASE_SERVICE_ROLE_KEY`            | Supabase → Project Settings → API |
 | `CREEM_API_KEY`                        | Creem → Developer → API Keys      |
 | `CREEM_WEBHOOK_SECRET`                 | Creem → Developer → Webhooks      |
@@ -163,8 +201,9 @@ Enable Google and GitHub providers in your Supabase dashboard under **Authentica
 Before deploying, make sure everything passes:
 
 ```bash
-npm run check        # lint + type-check
-npm run test:coverage # run tests with coverage
+npm run lint         # lint
+npm run typecheck    # type-check
+npm test             # run tests
 npm run build        # production build
 ```
 

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { IconArrowRight } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import { TextEffect } from '@/components/ui/text-effect'
@@ -71,26 +72,23 @@ export default function HeroSection() {
                     },
                     ...transitionVariants,
                   }}
-                  className="mt-12 flex items-center gap-2"
+                  className="mt-12 flex flex-wrap items-center gap-3"
                 >
-                  <div
+                  <Button
                     key={1}
-                    className="rounded-[calc(var(--radius-xl)+0.125rem)] border bg-foreground/10 p-0.5"
+                    size="lg"
+                    className="rounded-xl px-6 text-base shadow-lg shadow-primary/20"
+                    render={<Link href="/login" />}
+                    nativeButton={false}
                   >
-                    <Button
-                      size="lg"
-                      className="rounded-xl px-5 text-base"
-                      render={<Link href="/login" />}
-                      nativeButton={false}
-                    >
-                      <span className="text-nowrap">Start Building</span>
-                    </Button>
-                  </div>
+                    <span className="text-nowrap">Start Building</span>
+                    <IconArrowRight className="ml-2 size-4" />
+                  </Button>
                   <Button
                     key={2}
                     size="lg"
-                    variant="ghost"
-                    className="h-10.5 rounded-xl px-5 text-base"
+                    variant="outline"
+                    className="rounded-xl px-6 text-base"
                     render={<Link href="/pricing" />}
                     nativeButton={false}
                   >

@@ -1,15 +1,15 @@
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import {
-  ArrowUp,
-  CalendarCheck,
-  Globe,
-  Play,
-  Plus,
-  Signature,
-  Sparkles,
-  Target,
-} from 'lucide-react'
+  IconArrowUp,
+  IconCalendarCheck,
+  IconWorld,
+  IconPlayerPlay,
+  IconPlus,
+  IconSignature,
+  IconShieldLock,
+  IconCreditCard,
+} from '@tabler/icons-react'
 
 const MESCHAC_AVATAR = 'https://avatars.githubusercontent.com/u/47919550?v=4'
 const BERNARD_AVATAR = 'https://avatars.githubusercontent.com/u/31113941?v=4'
@@ -18,44 +18,47 @@ const GLODIE_AVATAR = 'https://avatars.githubusercontent.com/u/99137927?v=4'
 
 export default function FeaturesSection() {
   return (
-    <section>
+    <section style={{ contentVisibility: 'auto' }}>
       <div className="py-24">
         <div className="mx-auto w-full max-w-5xl px-6">
           <div>
             <h2 className="max-w-2xl text-4xl font-semibold text-balance text-foreground">
-              Empowering developers with AI-driven solutions
+              Everything you need to launch and scale your SaaS
             </h2>
           </div>
           <div className="mt-16 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             <Card variant="soft" className="overflow-hidden p-6">
-              <Target className="size-5 text-primary" />
-              <h3 className="mt-5 text-lg font-semibold text-foreground">AI Code Generation</h3>
+              <IconShieldLock className="size-5 text-primary" stroke={1.5} />
+              <h3 className="mt-5 text-lg font-semibold text-foreground">
+                Auth &amp; User Management
+              </h3>
               <p className="mt-3 text-balance text-muted-foreground">
-                Our advanced AI models transform natural language into production-ready code.
+                Supabase-powered authentication with email, OAuth, and role-based access — ready out
+                of the box.
               </p>
 
               <MeetingIllustration />
             </Card>
 
             <Card variant="soft" className="group overflow-hidden px-6 pt-6">
-              <CalendarCheck className="size-5 text-primary" />
+              <IconCreditCard className="size-5 text-primary" stroke={1.5} />
               <h3 className="mt-5 text-lg font-semibold text-foreground">
-                Intelligent Code Review
+                Payments &amp; Subscriptions
               </h3>
               <p className="mt-3 text-balance text-muted-foreground">
-                Our AI analyzes your code for bugs, security issues, and optimization opportunities.
+                Creem integration with checkout, webhooks, and subscription lifecycle fully wired up.
               </p>
 
               <CodeReviewIllustration />
             </Card>
             <Card variant="soft" className="group overflow-hidden px-6 pt-6">
-              <Sparkles className="size-5 text-primary" />
+              <IconCalendarCheck className="size-5 text-primary" stroke={1.5} />
               <h3 className="mt-5 text-lg font-semibold text-foreground">
-                Contextual AI Assistant
+                Credits &amp; Usage Tracking
               </h3>
               <p className="mt-3 text-balance text-muted-foreground">
-                A personalized AI companion that understands your codebase and helps solve
-                complex...
+                Built-in credits system with purchase, consumption, and balance tracking for
+                usage-based billing.
               </p>
 
               <div className="-mx-2 -mt-2 mask-b-from-50 px-2 pt-2">
@@ -135,11 +138,11 @@ const CodeReviewIllustration = () => {
           <div className="h-2 w-1/2 rounded-full bg-foreground/10"></div>
         </div>
 
-        <Signature className="mt-3 ml-8 size-5" />
+        <IconSignature className="mt-3 ml-8 size-5" stroke={1.5} />
       </Card>
       <Card className="absolute -top-4 right-0 flex aspect-3/5 w-2/5 translate-y-4 p-2 transition-transform duration-200 ease-in-out group-hover:rotate-3">
         <div className="m-auto flex size-10 rounded-full bg-foreground/5">
-          <Play className="m-auto size-4 fill-foreground/50 stroke-foreground/50" />
+          <IconPlayerPlay className="m-auto size-4 fill-foreground/50 stroke-foreground/50" />
         </div>
       </Card>
     </div>
@@ -153,7 +156,7 @@ const AIAssistantIllustration = () => {
       className="mt-6 aspect-video translate-y-4 p-4 pb-6 transition-transform duration-200 group-hover:translate-y-0"
     >
       <div className="w-fit">
-        <Sparkles className="size-3.5 fill-purple-300 stroke-purple-300" />
+        <IconCalendarCheck className="size-3.5 text-purple-400" stroke={1.5} />
         <p className="mt-2 line-clamp-2 text-sm">
           How can I optimize my neural network to reduce inference time while maintaining accuracy?
         </p>
@@ -168,19 +171,19 @@ const AIAssistantIllustration = () => {
               size="icon"
               className="size-7 rounded-2xl bg-transparent shadow-none"
             >
-              <Plus />
+              <IconPlus size={14} />
             </Button>
             <Button
               variant="outline"
               size="icon"
               className="size-7 rounded-2xl bg-transparent shadow-none"
             >
-              <Globe />
+              <IconWorld size={14} />
             </Button>
           </div>
 
           <Button size="icon" className="size-7 rounded-2xl bg-black">
-            <ArrowUp strokeWidth={3} />
+            <IconArrowUp size={14} strokeWidth={3} />
           </Button>
         </div>
       </div>

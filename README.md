@@ -1,7 +1,7 @@
 # Next.js + Supabase + Creem Starter
 
-[![CI](https://github.com/aaronpal/nextjs-supabase-creem-starter/actions/workflows/ci.yml/badge.svg)](https://github.com/aaronpal/nextjs-supabase-creem-starter/actions/workflows/ci.yml)
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/aaronpal/nextjs-supabase-creem-starter)
+[![CI](https://github.com/ubergonmx/nextjs-supabase-creem-starter/actions/workflows/ci.yml/badge.svg)](https://github.com/ubergonmx/nextjs-supabase-creem-starter/actions/workflows/ci.yml)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/ubergonmx/nextjs-supabase-creem-starter)
 ![Status](https://img.shields.io/badge/status-work--in--progress-yellow)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
@@ -34,7 +34,7 @@ Clone, configure, and start selling — no boilerplate to write.
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/aaronpal/nextjs-supabase-creem-starter.git
+git clone https://github.com/ubergonmx/nextjs-supabase-creem-starter.git
 cd nextjs-supabase-creem-starter
 npm install
 ```
@@ -86,7 +86,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Deployment
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/aaronpal/nextjs-supabase-creem-starter)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/ubergonmx/nextjs-supabase-creem-starter)
 
 Set the same environment variables from `.env.example` in your Vercel project settings.
 

@@ -5,6 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createCheckout } from "@/lib/creem/client";
 import { redirect } from "next/navigation";
 import type { CreditTransaction } from "../types";
+import { spendCreditsSchema } from "../schema";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
@@ -47,6 +48,11 @@ export async function spendCredits(
   amount: number,
   description: string,
 ): Promise<{ success: boolean; error?: string }> {
+  const validation = spendCreditsSchema.safeParse({ amount, description });
+  if (!validation.success) {
+    return { success: false, error: validation.error.issues[0].message };
+  }
+
   const supabase = await createClient();
   const {
     data: { user },

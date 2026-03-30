@@ -23,12 +23,14 @@ Clone, configure, and start selling — no boilerplate to write.
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/ubergonmx/nextjs-supabase-creem-starter)
 
-### Run locally (demo, no `.env.local` needed)
+### Run locally
 
 ```bash
 git clone https://github.com/ubergonmx/nextjs-supabase-creem-starter.git
 cd nextjs-supabase-creem-starter
 npm install
+cp .env.example .env.local
+# Fill in NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY at minimum
 npm run dev
 ```
 
@@ -94,9 +96,9 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Setup
 
-### 1. Clone and run locally
+### 1. Set up the project
 ```bash
-git clone 
+git clone https://github.com/ubergonmx/creemkit.git
 ```
 
 ```bash
@@ -117,8 +119,9 @@ cp .env.example .env.local
     - `001_profiles.sql`
     - `002_subscriptions.sql`
     - `003_credits.sql`
+    - `004_webhook_events.sql`
   - If you prefer using the Supabase CLI, run `supabase db push` 
-4. Enable auth providers:
+4. Setting up auth providers and redirect URL:
   - Go to **Authentication** (left sidebar, lock icon) > under **CONFIGURATION** , click **Sign In / Providers**
   - Under **Auth Providers**, enable sign in of the following:
     - **Google**: 
@@ -129,24 +132,20 @@ cp .env.example .env.local
       - Create an OAuth app in [GitHub Developer Settings](https://github.com/settings/developers) 
       - Copy-paste redirect URL from the Supabase sidebar (should look like `https://urcryetpnmgoatkitnumxb.supabase.co/auth/v1/callback`) into the GitHub app's **Authorization callback URL** field, then save.
       - After saving, copy the client ID and secret into the Supabase sidebar, then save.
-5. Set redirect URL:
-  - Still in the Authentication secondary sidebar, click **URL Configuration** (under CONFIGURATION)
+  - On the same page, under **CONFIGURATION**, go to **URL Configuration**
   - Under **Redirect URLs**, click **Add URL**
   - Add: `http://localhost:3000/auth/callback`
-  - (You'll come back and add your production URL after deploying -- see step 5 below)
-
-
-<!-- TODO: remaining Supabase steps -->
+  - (For production URL, see step 5 below)
 
 ### 3. Set up Creem
 
 1. Create an account at [creem.io](https://www.creem.io) or, if you don't have an existing store, [create a new one](https://www.creem.io/dashboard/create)
 2. Enable **Test Mode** in the bottom-left of the sidebar
 3. Go to **Developers > API & Webhooks** in the left sidebar
-4. On the **API Keys** tab, click **+ Create API Key**, name it anything (e.g. `next-supabase-creem-starter`), toggle **Full Access** on, click **Create Key**, and copy the key
+4. On the **API Keys** tab, click **+ Create API Key**, name it anything (e.g. `creemkit`), toggle **Full Access** on, click **Create Key**, and copy the key
 5. Create three subscription products — go to **Commerce > Products** in the left sidebar, click **Create Product**. For each product:
    - **Section 1 (Product Details)**: Enter the product name and description
-   - **Section 2 (Payment Details)**: Click the **Subscription** tab, set Currency to **USD**, enter the price, set Subscription interval to **Monthly**, Tax category to **Digital goods or services**
+   - **Section 2 (Payment Details)**: Click the **Subscription** tab, set Currency to **USD**, enter the price, set Subscription interval to **Monthly**, Tax category to **Software as a Service**
    - **Sections 3–6**: Skip (image, features, advanced options, and abandoned cart are all optional)
    - Click **Create Product**
 
@@ -154,47 +153,42 @@ cp .env.example .env.local
 
    | **Product name** | **Price** |
    | ---------------- | --------- |
-   | Starter          |           |
-   | Pro              |           |
-   | Enterprise       |           |
+   | Pro              |    19     |
+   | Business         |    29     |
 
 6. After creating each product, copy its `prod_` ID (shown on the product detail page) into your `.env.local`
 
-### 3. Configure environment variables
+
+### 4. Run locally
 
 ```bash
-cp .env.example .env.local
+npm run dev
 ```
+Open [http://localhost:3000](http://localhost:3000). 
+Everything should work except for checkouts, which require webhooks to be set up. You can skip to #5 if you want to deploy to production.
 
-Fill in `.env.local` with your credentials:
+#### Optional: Ngrok for local development with webhooks
+1. Run `npx ngrok http 3000` to create a secure tunnel to your localhost
+2. Copy the generated forwarding URL (should look like `https://abc123.ngrok-free.dev`) and do the following:
+  - In `.env.local`, paste the URL to `NEXT_PUBLIC_APP_URL` 
+  - In `nextjs.config.ts`, add the URL to the `allowedOrigins` array
+  - In Supabase, go to **Authentication > URL Configuration**, set the URL in **Site URL** and add it to **Redirect URLs** 
+  - In Creem, go to **Developers > API & Webhooks**, click the **Webhooks** tab, click **+ Create Webhook**, enter `<URL>/api/webhooks/creem` (e.g. `https://abc123.ngrok-free.dev/api/webhooks/creem`), select "All events", and create. Copy the generated secret and add it to `CREEM_WEBHOOK_SECRET` in your `.env.local`.
+3. Instead of `http://localhost:3000`, use the ngrok URL (e.g. `https://abc123.ngrok-free.dev`) to test your app with webhooks locally.
 
-| Variable                               | Where to find it                  |
-| -------------------------------------- | --------------------------------- |
-| `NEXT_PUBLIC_SUPABASE_URL`             | Supabase → Project Settings → API |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`        | Supabase → Project Settings → API |
-| `SUPABASE_SERVICE_ROLE_KEY`            | Supabase → Project Settings → API |
-| `CREEM_API_KEY`                        | Creem → Developer → API Keys      |
-| `CREEM_WEBHOOK_SECRET`                 | Creem → Developer → Webhooks      |
-| `NEXT_PUBLIC_CREEM_PRODUCT_ID_PRO`     | Creem → Products                  |
-| `NEXT_PUBLIC_CREEM_PRODUCT_ID_CREDITS` | Creem → Products                  |
+### 5. Deploy to Vercel
 
-### 4. Set up the database
-
-Run the migrations against your Supabase project:
-
-```bash
-# Using the Supabase CLI
-supabase db push
-
-# Or run each file manually in the Supabase SQL editor:
-# supabase/migrations/001_profiles.sql
-# supabase/migrations/002_subscriptions.sql
-# supabase/migrations/003_credits.sql
-```
-
-### 5. Configure OAuth (optional)
-
-Enable Google and GitHub providers in your Supabase dashboard under **Authentication → Providers**.
+1. Make sure your project is pushed to a GitHub repository
+2. Go to [vercel.com](https://vercel.com) and log in or register
+3. Click **Add New...** > **Project**
+4. Under **Import Git Repository**, select your repo and click **Import**
+5. On the **New Project** setup page:
+   - **Framework Preset** should automatically detect **Next.js** — no need to change it
+   - **Root Directory** can stay as `./`
+   - Expand the **Environment Variables** section
+   - Enter each key-value pair from your `.env.local` file (key on the left, value on the right). You can skip `CREEM_WEBHOOK_SECRET` for now — this will be configured after the initial deployment
+6. Click **Deploy** and wait for the build to complete
+7. Once done, copy your production URL from the Vercel dashboard (e.g. `https://your-app.vercel.app`)
 
 ### 6. Verify everything
 
@@ -217,14 +211,7 @@ If all three pass, you're ready to deploy. 🚀
 
 Skills that help you (and AI) build faster when adding features:
 
-#### Creem
-
-- Check the [original docs](https://docs.creem.io/code/sdks/ai-agents) or install the skill:
-  ```bash
-  npx skills add https://github.com/armitage-labs/creem-skills --skill creem
-  ```
-
-#### Supabase Query Tuning
+#### Supabase Best Practices (Query, RLS policies, etc.)
 
 ```bash
 npx skills add https://github.com/sickn33/antigravity-awesome-skills --skill supabase-postgres-best-practices

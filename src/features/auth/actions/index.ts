@@ -1,5 +1,6 @@
 "use server";
 
+import * as z from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
@@ -41,13 +42,13 @@ export async function login(
   formData: FormData,
 ): Promise<AuthActionState> {
   const raw = {
-    email: formData.get("email"),
-    password: formData.get("password"),
+    email: String(formData.get("email") ?? ""),
+    password: String(formData.get("password") ?? ""),
   };
 
   const result = loginSchema.safeParse(raw);
   if (!result.success) {
-    return { fieldErrors: result.error.flatten().fieldErrors };
+    return { fieldErrors: z.flattenError(result.error).fieldErrors, inputs: raw };
   }
 
   const supabase = await createClient();
@@ -57,7 +58,7 @@ export async function login(
   });
 
   if (error) {
-    return { error: "Invalid email or password" };
+    return { error: "Invalid email or password", inputs: raw };
   }
 
   redirect("/dashboard");
@@ -68,15 +69,15 @@ export async function signup(
   formData: FormData,
 ): Promise<AuthActionState> {
   const raw = {
-    fullName: formData.get("fullName"),
-    email: formData.get("email"),
-    password: formData.get("password"),
-    confirmPassword: formData.get("confirmPassword"),
+    fullName: String(formData.get("fullName") ?? ""),
+    email: String(formData.get("email") ?? ""),
+    password: String(formData.get("password") ?? ""),
+    confirmPassword: String(formData.get("confirmPassword") ?? ""),
   };
 
   const result = signupSchema.safeParse(raw);
   if (!result.success) {
-    return { fieldErrors: result.error.flatten().fieldErrors };
+    return { fieldErrors: z.flattenError(result.error).fieldErrors, inputs: raw };
   }
 
   const headersList = await headers();
@@ -95,7 +96,7 @@ export async function signup(
   });
 
   if (error) {
-    return { error: error.message };
+    return { error: error.message, inputs: raw };
   }
 
   if (!data.session) {

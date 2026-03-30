@@ -60,14 +60,15 @@ export const webhookHandlers: WebhookHandlers = {
 
     const admin = createAdminClient();
 
-    await admin
+    const { error: profileError } = await admin
       .from("profiles")
       .update({ creem_customer_id: event.customer.id })
       .eq("id", userId);
+    if (profileError) throw new Error(`profiles update failed: ${profileError.message}`);
 
     if (event.subscription) {
       const sub = event.subscription;
-      await admin.from("subscriptions").upsert(
+      const { error: upsertError } = await admin.from("subscriptions").upsert(
         {
           user_id: userId,
           creem_subscription_id: sub.id,
@@ -84,6 +85,7 @@ export const webhookHandlers: WebhookHandlers = {
         },
         { onConflict: "creem_subscription_id" },
       );
+      if (upsertError) throw new Error(`subscriptions upsert failed: ${upsertError.message}`);
     } else {
       // One-time credit purchase
       const credits = creditsForProductId(event.product.id);

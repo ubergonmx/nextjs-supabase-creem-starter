@@ -4,6 +4,7 @@ import { DataTable } from "@/features/dashboard/components/data-table";
 import { SectionCards } from "@/features/dashboard/components/section-cards";
 import { SiteHeader } from "@/features/dashboard/components/site-header";
 import { SubscriptionCard } from "@/features/billing/components/subscription-card";
+import { CheckoutSuccessToast } from "@/features/billing/components/checkout-success-toast";
 import { getUserSubscription } from "@/features/billing/actions";
 import { getCreditsBalance } from "@/features/credits/actions";
 
@@ -14,14 +15,20 @@ export const metadata: Metadata = {
   description: "View your key metrics, usage data, and recent activity.",
 };
 
-export default async function Page() {
-  const [subscription, creditsBalance] = await Promise.all([
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ checkout?: string }>;
+}) {
+  const [{ checkout }, subscription, creditsBalance] = await Promise.all([
+    searchParams,
     getUserSubscription(),
     getCreditsBalance(),
   ]);
 
   return (
     <>
+      {checkout === "success" && <CheckoutSuccessToast />}
       <SiteHeader />
       <div className="flex flex-1 flex-col">
         <div className="@container/main flex flex-1 flex-col gap-2">

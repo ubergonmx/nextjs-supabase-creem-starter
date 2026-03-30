@@ -6,6 +6,7 @@ import { ManageSubscription } from "@/features/billing/components/manage-subscri
 import { getCreditsBalance } from "@/features/credits/actions";
 import { PLANS } from "@/features/billing/types";
 import { CheckoutButton } from "@/features/billing/components/checkout-button";
+import { UpgradeButton } from "@/features/billing/components/upgrade-button";
 import {
   Card,
   CardContent,
@@ -63,9 +64,15 @@ export default async function BillingPage() {
                   <p className="text-sm text-muted-foreground">
                     {PLANS.pro.credits.toLocaleString()} credits/month
                   </p>
-                  <CheckoutButton productId={PLANS.pro.productId!}>
-                    {subscription ? "Switch to Pro" : "Get Pro"}
-                  </CheckoutButton>
+                  {subscription ? (
+                    <UpgradeButton productId={PLANS.pro.productId!}>
+                      Switch to Pro
+                    </UpgradeButton>
+                  ) : (
+                    <CheckoutButton productId={PLANS.pro.productId!}>
+                      Get Pro
+                    </CheckoutButton>
+                  )}
                 </div>
               )}
               {PLANS.business.productId && (
@@ -80,12 +87,15 @@ export default async function BillingPage() {
                   <p className="text-sm text-muted-foreground">
                     Unlimited credits
                   </p>
-                  <CheckoutButton
-                    productId={PLANS.business.productId!}
-                    variant="outline"
-                  >
-                    {subscription ? "Switch to Business" : "Get Business"}
-                  </CheckoutButton>
+                  {subscription ? (
+                    <UpgradeButton productId={PLANS.business.productId!} variant="outline">
+                      Switch to Business
+                    </UpgradeButton>
+                  ) : (
+                    <CheckoutButton productId={PLANS.business.productId!} variant="outline">
+                      Get Business
+                    </CheckoutButton>
+                  )}
                 </div>
               )}
             </div>

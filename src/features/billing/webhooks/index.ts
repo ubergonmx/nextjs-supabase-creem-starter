@@ -1,224 +1,238 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-import {
-  creemWebhookEventSchema,
-  creemCheckoutSchema,
-  creemSubscriptionSchema,
-} from "../schema";
-import { PLANS } from "../types";
-import type { CreemWebhookEventType, SubscriptionStatus } from "../types";
+import { PLANS } from "@/features/billing/types";
+import type { SubscriptionStatus } from "@/features/billing/types";
+import type { Webhook } from "@creem_io/nextjs";
+
+// ---------- Types ----------
+
+type WebhookHandlers = Omit<NonNullable<Parameters<typeof Webhook>[0]>, "webhookSecret">;
+
+// ---------- Helpers ----------
 
 const ONE_TIME_CREDITS_PURCHASE_AMOUNT = 500;
 
-function mapCreemStatus(status: string): SubscriptionStatus {
-  switch (status) {
-    case "active":
-      return "active";
-    case "trialing":
-      return "trialing";
-    case "canceled":
-    case "cancelled":
-      return "canceled";
-    case "past_due":
-      return "past_due";
-    case "paused":
-      return "paused";
-    default:
-      return "incomplete";
-  }
-}
-
-function creditsForProductId(productId: string): number {
-  if (productId === process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_PRO) {
-    return PLANS.pro.credits;
-  }
-
-  if (productId === process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_BUSINESS) {
-    return -1; // unlimited — no top-up needed
-  }
-
-  if (productId === process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_CREDITS) {
-    return ONE_TIME_CREDITS_PURCHASE_AMOUNT;
-  }
-
-  console.warn(
-    `creditsForProductId: unknown product_id "${productId}" — no credits granted`,
-  );
+export function creditsForProductId(productId: string): number {
+  if (productId === process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_PRO) return PLANS.pro.credits;
+  if (productId === process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_BUSINESS) return -1; // unlimited
+  if (productId === process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_CREDITS) return ONE_TIME_CREDITS_PURCHASE_AMOUNT;
+  console.warn(`creditsForProductId: unknown product_id "${productId}" — no credits granted`);
   return 0;
 }
 
-export async function handleWebhookEvent(rawBody: string): Promise<void> {
-  const parsed = creemWebhookEventSchema.parse(JSON.parse(rawBody));
-  const eventType = parsed.event_type as CreemWebhookEventType;
-
-  switch (eventType) {
-    case "checkout.completed":
-      return handleCheckoutCompleted(parsed.object);
-    case "subscription.active":
-    case "subscription.paid":
-    case "subscription.trialing":
-    case "subscription.update":
-      return handleSubscriptionUpsert(parsed.object, eventType);
-    case "subscription.canceled":
-    case "subscription.expired":
-      return handleSubscriptionEnded(parsed.object);
-    case "subscription.paused":
-      return handleSubscriptionPaused(parsed.object);
-    case "refund.created":
-      return handleRefundCreated(parsed.object);
-    default:
-      console.warn(`Unhandled webhook event: ${eventType}`);
-  }
+export function mapStatus(raw: string): SubscriptionStatus {
+  const map: Record<string, SubscriptionStatus> = {
+    active: "active",
+    trialing: "trialing",
+    canceled: "canceled",
+    cancelled: "canceled",
+    past_due: "past_due",
+    paused: "paused",
+  };
+  return map[raw] ?? "incomplete";
 }
 
-async function handleCheckoutCompleted(object: unknown): Promise<void> {
-  const checkout = creemCheckoutSchema.parse(object);
+/** Inserts a webhook_events row for idempotency. Returns true if already processed. */
+export async function isDuplicate(webhookId: string, eventType: string): Promise<boolean> {
   const admin = createAdminClient();
+  const { data: existing } = await admin
+    .from("webhook_events")
+    .select("id")
+    .eq("id", webhookId)
+    .maybeSingle();
 
-  const userId = checkout.metadata?.user_id;
-  if (!userId) {
-    console.warn("checkout.completed: no user_id in metadata");
-    return;
-  }
+  if (existing) return true;
 
-  // Store creem_customer_id on profiles
-  await admin
-    .from("profiles")
-    .update({ creem_customer_id: checkout.customer.id })
-    .eq("id", userId);
+  await admin.from("webhook_events").insert({ id: webhookId, event_type: eventType });
+  return false;
+}
 
-  if (checkout.subscription) {
-    const sub = checkout.subscription;
-    await admin.from("subscriptions").upsert(
-      {
-        user_id: userId,
-        creem_subscription_id: sub.id,
-        creem_customer_id: checkout.customer.id,
-        plan_id: sub.product_id,
-        status: mapCreemStatus(sub.status),
-        current_period_start: sub.current_period_start ?? null,
-        current_period_end: sub.current_period_end ?? null,
-        cancel_at_period_end: sub.cancel_at_period_end ?? false,
-      },
-      { onConflict: "creem_subscription_id" },
-    );
-  } else {
-    // One-time credit purchase
-    const credits = creditsForProductId(checkout.product_id);
-    if (credits > 0) {
-      const { error } = await admin.rpc("add_credits", {
-        p_user_id: userId,
-        p_amount: credits,
-        p_type: "purchase",
-        p_description: `Purchased ${credits} credits`,
-      });
+// ---------- Handlers ----------
 
-      if (error) {
-        throw new Error(`add_credits RPC failed: ${error.message}`);
+export const webhookHandlers: WebhookHandlers = {
+  onCheckoutCompleted: async (event) => {
+    if (await isDuplicate(event.webhookId, "checkout.completed")) return;
+
+    const userId = (event.metadata as Record<string, string> | undefined)?.user_id;
+    if (!userId) {
+      console.warn("[webhook] checkout.completed: no user_id in metadata, skipping");
+      return;
+    }
+
+    const admin = createAdminClient();
+
+    await admin
+      .from("profiles")
+      .update({ creem_customer_id: event.customer.id })
+      .eq("id", userId);
+
+    if (event.subscription) {
+      const sub = event.subscription;
+      await admin.from("subscriptions").upsert(
+        {
+          user_id: userId,
+          creem_subscription_id: sub.id,
+          creem_customer_id: event.customer.id,
+          plan_id: event.product.id,
+          status: mapStatus(sub.status ?? "active"),
+          current_period_start: sub.current_period_start_date
+            ? new Date(sub.current_period_start_date).toISOString()
+            : null,
+          current_period_end: sub.current_period_end_date
+            ? new Date(sub.current_period_end_date).toISOString()
+            : null,
+          cancel_at_period_end: false,
+        },
+        { onConflict: "creem_subscription_id" },
+      );
+    } else {
+      // One-time credit purchase
+      const credits = creditsForProductId(event.product.id);
+      if (credits > 0) {
+        const { error } = await admin.rpc("add_credits", {
+          p_user_id: userId,
+          p_amount: credits,
+          p_type: "purchase",
+          p_description: `Purchased ${credits} credits`,
+        });
+        if (error) throw new Error(`add_credits RPC failed: ${error.message}`);
       }
     }
-  }
-}
+  },
 
-async function handleSubscriptionUpsert(
-  object: unknown,
-  eventType: CreemWebhookEventType,
-): Promise<void> {
-  const sub = creemSubscriptionSchema.parse(object);
-  const admin = createAdminClient();
+  onSubscriptionActive: async (event) => {
+    if (await isDuplicate(event.webhookId, "subscription.active")) return;
+    const admin = createAdminClient();
+    await admin
+      .from("subscriptions")
+      .update({
+        status: "active",
+        current_period_end: event.current_period_end_date
+          ? new Date(event.current_period_end_date).toISOString()
+          : undefined,
+      })
+      .eq("creem_subscription_id", event.id);
+  },
 
-  // Look up user_id via creem_customer_id on profiles
-  const { data: profile } = await admin
-    .from("profiles")
-    .select("id")
-    .eq("creem_customer_id", sub.customer.id)
-    .single();
+  onSubscriptionPaid: async (event) => {
+    if (await isDuplicate(event.webhookId, "subscription.paid")) return;
+    const admin = createAdminClient();
 
-  if (!profile) {
-    console.warn(
-      `handleSubscriptionUpsert: no profile for customer ${sub.customer.id}`,
-    );
-    return;
-  }
+    await admin
+      .from("subscriptions")
+      .update({
+        status: "active",
+        current_period_end: event.current_period_end_date
+          ? new Date(event.current_period_end_date).toISOString()
+          : undefined,
+      })
+      .eq("creem_subscription_id", event.id);
 
-  await admin.from("subscriptions").upsert(
-    {
-      user_id: profile.id,
-      creem_subscription_id: sub.id,
-      creem_customer_id: sub.customer.id,
-      plan_id: sub.product_id,
-      status: mapCreemStatus(sub.status),
-      current_period_start: sub.current_period_start ?? null,
-      current_period_end: sub.current_period_end ?? null,
-      cancel_at_period_end: sub.cancel_at_period_end ?? false,
-    },
-    { onConflict: "creem_subscription_id" },
-  );
+    // Top up credits on each billing cycle
+    const { data: sub } = await admin
+      .from("subscriptions")
+      .select("user_id, plan_id")
+      .eq("creem_subscription_id", event.id)
+      .single();
 
-  // On subscription.paid → top up credits based on plan
-  if (eventType === "subscription.paid") {
-    const credits = creditsForProductId(sub.product_id);
-    if (credits > 0) {
-      const { error } = await admin.rpc("add_credits", {
-        p_user_id: profile.id,
-        p_amount: credits,
-        p_type: "topup",
-        p_description: "Monthly credit top-up",
-      });
-
-      if (error) {
-        throw new Error(`add_credits RPC failed: ${error.message}`);
+    if (sub?.plan_id) {
+      const credits = creditsForProductId(sub.plan_id as string);
+      if (credits > 0) {
+        const { error } = await admin.rpc("add_credits", {
+          p_user_id: sub.user_id,
+          p_amount: credits,
+          p_type: "topup",
+          p_description: "Monthly credit top-up",
+        });
+        if (error) throw new Error(`add_credits RPC failed: ${error.message}`);
       }
     }
-  }
-}
+  },
 
-async function handleSubscriptionEnded(object: unknown): Promise<void> {
-  const sub = creemSubscriptionSchema.parse(object);
-  const admin = createAdminClient();
+  onSubscriptionTrialing: async (event) => {
+    if (await isDuplicate(event.webhookId, "subscription.trialing")) return;
+    const admin = createAdminClient();
+    await admin
+      .from("subscriptions")
+      .update({
+        status: "trialing",
+        current_period_end: event.current_period_end_date
+          ? new Date(event.current_period_end_date).toISOString()
+          : undefined,
+      })
+      .eq("creem_subscription_id", event.id);
+  },
 
-  await admin
-    .from("subscriptions")
-    .update({ status: "canceled" })
-    .eq("creem_subscription_id", sub.id);
-}
+  onSubscriptionCanceled: async (event) => {
+    if (await isDuplicate(event.webhookId, "subscription.canceled")) return;
+    const admin = createAdminClient();
+    await admin
+      .from("subscriptions")
+      .update({ status: "canceled" })
+      .eq("creem_subscription_id", event.id);
+  },
 
-async function handleSubscriptionPaused(object: unknown): Promise<void> {
-  const sub = creemSubscriptionSchema.parse(object);
-  const admin = createAdminClient();
+  onSubscriptionExpired: async (event) => {
+    if (await isDuplicate(event.webhookId, "subscription.expired")) return;
+    const admin = createAdminClient();
+    await admin
+      .from("subscriptions")
+      .update({ status: "canceled" })
+      .eq("creem_subscription_id", event.id);
+  },
 
-  await admin
-    .from("subscriptions")
-    .update({ status: "paused" })
-    .eq("creem_subscription_id", sub.id);
-}
+  onSubscriptionPaused: async (event) => {
+    if (await isDuplicate(event.webhookId, "subscription.paused")) return;
+    const admin = createAdminClient();
+    await admin
+      .from("subscriptions")
+      .update({ status: "paused" })
+      .eq("creem_subscription_id", event.id);
+  },
 
-async function handleRefundCreated(object: unknown): Promise<void> {
-  // Refund payload has minimal shape — just need subscription or customer ref
-  const refund = object as Record<string, unknown>;
-  const customerId = (refund.customer as { id?: string } | undefined)?.id;
-  if (!customerId) return;
+  onSubscriptionUpdate: async (event) => {
+    if (await isDuplicate(event.webhookId, "subscription.update")) return;
+    const admin = createAdminClient();
+    const productId =
+      typeof event.product === "string" ? event.product : (event.product as { id: string }).id;
+    await admin
+      .from("subscriptions")
+      .update({
+        plan_id: productId,
+        status: mapStatus(event.status ?? "active"),
+        current_period_end: event.current_period_end_date
+          ? new Date(event.current_period_end_date).toISOString()
+          : undefined,
+      })
+      .eq("creem_subscription_id", event.id);
+  },
 
-  const admin = createAdminClient();
+  onRefundCreated: async (event) => {
+    if (await isDuplicate(event.webhookId, "refund.created")) return;
+    const admin = createAdminClient();
 
-  const { data: profile } = await admin
-    .from("profiles")
-    .select("id")
-    .eq("creem_customer_id", customerId)
-    .single();
+    const subscriptionId =
+      typeof event.subscription === "string"
+        ? event.subscription
+        : (event.subscription as { id?: string } | undefined)?.id;
 
-  if (!profile) return;
+    if (!subscriptionId) return;
 
-  const refundAmount = typeof refund.amount === "number" ? refund.amount : 0;
+    const { data: sub } = await admin
+      .from("subscriptions")
+      .select("user_id, plan_id")
+      .eq("creem_subscription_id", subscriptionId)
+      .maybeSingle();
 
-  if (refundAmount > 0) {
-    const { error } = await admin.rpc("deduct_credits", {
-      p_user_id: profile.id,
-      p_amount: refundAmount,
-      p_description: "Refund processed",
-    });
+    if (!sub) return;
 
-    if (error) {
-      throw new Error(`deduct_credits RPC failed: ${error.message}`);
+    const creditsToDeduct = sub.plan_id ? creditsForProductId(sub.plan_id as string) : 0;
+    if (creditsToDeduct > 0) {
+      const { error } = await admin.rpc("deduct_credits", {
+        p_user_id: sub.user_id,
+        p_amount: creditsToDeduct,
+        p_description: "Refund processed",
+      });
+      if (error) throw new Error(`deduct_credits RPC failed: ${error.message}`);
     }
-  }
-}
+  },
+};

@@ -46,14 +46,21 @@ export async function createCheckoutSession(
 
   if (!user) redirect("/login");
 
-  const { checkout_url } = await createCheckout({
-    productId,
-    successUrl: `${APP_URL}/dashboard?checkout=success`,
-    customerEmail: user.email!,
-    metadata: { user_id: user.id },
-  });
+  let checkoutUrl: string;
+  try {
+    const result = await createCheckout({
+      productId,
+      successUrl: `${APP_URL}/dashboard?checkout=success`,
+      customerEmail: user.email!,
+      metadata: { user_id: user.id },
+    });
+    checkoutUrl = result.checkout_url;
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "Checkout unavailable";
+    redirect(`/pricing?error=${encodeURIComponent(message)}`);
+  }
 
-  redirect(checkout_url);
+  redirect(checkoutUrl);
 }
 
 // ---------- Subscription queries ----------
@@ -96,11 +103,16 @@ export async function openCustomerPortal(): Promise<void> {
     redirect("/dashboard/billing?error=no_customer");
   }
 
-  const { customer_portal_link } = await getCustomerPortalLink(
-    profile.creem_customer_id,
-  );
+  let portalUrl: string;
+  try {
+    const result = await getCustomerPortalLink(profile.creem_customer_id);
+    portalUrl = result.customer_portal_link;
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "Portal unavailable";
+    redirect(`/dashboard/billing?error=${encodeURIComponent(message)}`);
+  }
 
-  redirect(customer_portal_link);
+  redirect(portalUrl);
 }
 
 // ---------- Cancel ----------
@@ -118,7 +130,10 @@ export async function cancelUserSubscription(
     .from("subscriptions")
     .select("creem_subscription_id")
     .eq("user_id", user.id)
-    .single();
+    .not("status", "eq", "canceled")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
   if (!sub?.creem_subscription_id) return { error: "No active subscription" };
 
@@ -154,7 +169,10 @@ export async function resumeUserSubscription(): Promise<{ error?: string }> {
     .from("subscriptions")
     .select("creem_subscription_id")
     .eq("user_id", user.id)
-    .single();
+    .not("status", "eq", "canceled")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
   if (!sub?.creem_subscription_id) return { error: "No active subscription" };
 
@@ -185,7 +203,10 @@ export async function upgradeUserSubscription(
     .from("subscriptions")
     .select("creem_subscription_id")
     .eq("user_id", user.id)
-    .single();
+    .not("status", "eq", "canceled")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
   if (!sub?.creem_subscription_id) redirect("/dashboard/billing");
 
@@ -216,7 +237,10 @@ export async function pauseUserSubscription(): Promise<{ error?: string }> {
     .from("subscriptions")
     .select("creem_subscription_id")
     .eq("user_id", user.id)
-    .single();
+    .not("status", "eq", "canceled")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
   if (!sub?.creem_subscription_id) return { error: "No active subscription" };
 

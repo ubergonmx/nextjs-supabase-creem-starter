@@ -27,6 +27,11 @@ export async function getCreditsBalance(): Promise<number> {
 }
 
 export async function purchaseCredits(): Promise<void> {
+  const productId = process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_CREDITS;
+  if (!productId) {
+    redirect("/dashboard/credits?error=product_not_configured");
+  }
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -34,14 +39,21 @@ export async function purchaseCredits(): Promise<void> {
 
   if (!user) redirect("/login");
 
-  const { checkout_url } = await createCheckout({
-    productId: process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_CREDITS!,
-    successUrl: `${APP_URL}/dashboard/credits?purchased=1`,
-    customerEmail: user.email!,
-    metadata: { user_id: user.id },
-  });
+  let checkoutUrl: string;
+  try {
+    const result = await createCheckout({
+      productId,
+      successUrl: `${APP_URL}/dashboard/credits?purchased=1`,
+      customerEmail: user.email!,
+      metadata: { user_id: user.id },
+    });
+    checkoutUrl = result.checkout_url;
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "Checkout unavailable";
+    redirect(`/dashboard/credits?error=${encodeURIComponent(message)}`);
+  }
 
-  redirect(checkout_url);
+  redirect(checkoutUrl);
 }
 
 export async function spendCredits(

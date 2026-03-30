@@ -1,5 +1,3 @@
-import * as crypto from "node:crypto";
-
 const CREEM_BASE_URL =
   process.env.NODE_ENV === "production"
     ? "https://api.creem.io"
@@ -64,7 +62,7 @@ export async function createCheckout(params: {
     body: {
       product_id: params.productId,
       success_url: params.successUrl,
-      customer_email: params.customerEmail,
+      customer: { email: params.customerEmail },
       metadata: params.metadata,
     },
   });
@@ -128,22 +126,3 @@ export async function getCustomerPortalLink(
   });
 }
 
-// ---------- Webhook Verification ----------
-export function verifyWebhookSignature(
-  rawBody: string,
-  signature: string,
-): boolean {
-  const expected = crypto
-    .createHmac("sha256", process.env.CREEM_WEBHOOK_SECRET!)
-    .update(rawBody)
-    .digest("hex");
-
-  const expectedBuf = Buffer.from(expected, "hex");
-  const signatureBuf = Buffer.from(signature, "hex");
-
-  if (expectedBuf.length !== signatureBuf.length) {
-    return false;
-  }
-
-  return crypto.timingSafeEqual(expectedBuf, signatureBuf);
-}

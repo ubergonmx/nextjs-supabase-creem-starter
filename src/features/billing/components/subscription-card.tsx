@@ -103,7 +103,7 @@ export function SubscriptionCard({ subscription, creditsBalance }: Props) {
             ) : (
               <>
                 {PLANS.pro.productId && (
-                  <Button size="sm" render={<Link href="/pricing" />}>
+                  <Button size="sm" render={<Link href="/pricing" />} nativeButton={false}>
                     Upgrade to Pro
                   </Button>
                 )}
@@ -126,7 +126,7 @@ export function SubscriptionCard({ subscription, creditsBalance }: Props) {
               ? "∞"
               : creditsBalance.toLocaleString()}
           </p>
-          <Button size="sm" variant="outline" render={<Link href="/dashboard/credits" />}>
+          <Button size="sm" variant="outline" render={<Link href="/dashboard/credits" />} nativeButton={false}>
             View details
           </Button>
         </CardContent>

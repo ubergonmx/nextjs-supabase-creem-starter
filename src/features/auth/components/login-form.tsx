@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -28,6 +28,7 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const [state, action, pending] = useActionState(login, undefined);
+  const [oauthPending, startOAuthTransition] = useTransition();
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -44,18 +45,20 @@ export function LoginForm({
               <Button
                 variant="outline"
                 type="button"
-                onClick={() => loginWithOAuth("github")}
+                disabled={oauthPending}
+                onClick={() => startOAuthTransition(() => loginWithOAuth("github"))}
               >
                 <GitHub className="size-4" />
-                Login with GitHub
+                {oauthPending ? "Redirecting…" : "Login with GitHub"}
               </Button>
               <Button
                 variant="outline"
                 type="button"
-                onClick={() => loginWithOAuth("google")}
+                disabled={oauthPending}
+                onClick={() => startOAuthTransition(() => loginWithOAuth("google"))}
               >
                 <Google className="size-4" />
-                Login with Google
+                {oauthPending ? "Redirecting…" : "Login with Google"}
               </Button>
             </Field>
             <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">

@@ -79,12 +79,18 @@ export async function signup(
     return { fieldErrors: result.error.flatten().fieldErrors };
   }
 
+  const headersList = await headers();
+  const baseUrl = getAuthRedirectBaseUrl(headersList);
+
+  console.log("Signup action - baseUrl:", baseUrl); // Debug log for base URL
+
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
     email: result.data.email,
     password: result.data.password,
     options: {
       data: { full_name: result.data.fullName },
+      emailRedirectTo: `${baseUrl}/auth/callback`,
     },
   });
 
@@ -93,9 +99,7 @@ export async function signup(
   }
 
   if (!data.session) {
-    return {
-      message: "Check your email to confirm your account, then sign in.",
-    };
+    redirect("/login?signup=pending");
   }
 
   redirect("/dashboard");

@@ -22,6 +22,8 @@ import {
   IconHelp,
   IconCreditCard,
   IconCoins,
+  IconCalendarWeek,
+  IconMessageCircleUser,
 } from '@tabler/icons-react'
 import { Logo } from '@/components/logo'
 
@@ -60,12 +62,12 @@ const navFeatures = [
   {
     name: 'Feature 1',
     url: '#',
-    icon: <IconDashboard />,
+    icon: <IconMessageCircleUser />,
   },
   {
     name: 'Feature 2',
     url: '#',
-    icon: <IconSettings />,
+    icon: <IconCalendarWeek />,
   },
 ]
 

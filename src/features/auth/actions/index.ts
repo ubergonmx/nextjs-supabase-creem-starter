@@ -90,8 +90,6 @@ export async function signup(
   const headersList = await headers();
   const baseUrl = getAuthRedirectBaseUrl(headersList);
 
-  console.log("Signup action - baseUrl:", baseUrl); // Debug log for base URL
-
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
     email: result.data.email,

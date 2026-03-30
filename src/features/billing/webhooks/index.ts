@@ -34,16 +34,16 @@ export function mapStatus(raw: string): SubscriptionStatus {
 /** Inserts a webhook_events row for idempotency. Returns true if already processed. */
 export async function isDuplicate(webhookId: string, eventType: string): Promise<boolean> {
   const admin = createAdminClient();
-  const { data: existing } = await admin
+  const { error } = await admin
     .from("webhook_events")
-    .select("id")
-    .eq("id", webhookId)
-    .maybeSingle();
+    .insert({ id: webhookId, event_type: eventType });
 
-  if (existing) return true;
+  if (!error) return false;
 
-  await admin.from("webhook_events").insert({ id: webhookId, event_type: eventType });
-  return false;
+  // Duplicate webhook id means this event was already processed.
+  if (error.code === "23505") return true;
+
+  throw new Error(`webhook_events idempotency insert failed: ${error.message}`);
 }
 
 // ---------- Handlers ----------

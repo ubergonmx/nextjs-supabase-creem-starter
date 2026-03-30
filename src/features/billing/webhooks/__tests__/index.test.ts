@@ -84,11 +84,14 @@ describe("webhookHandlers", () => {
   });
 
   it("onCheckoutCompleted — skips duplicate webhookId", async () => {
-    const chain = makeChain({ id: "wh_test_123" });
-    // Return existing row = duplicate
-    (chain.maybeSingle as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
-      data: { id: "wh_test_123" },
-      error: null,
+    const chain = makeChain(null);
+    // Atomic insert reports duplicate via unique violation.
+    (chain.insert as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      data: null,
+      error: {
+        code: "23505",
+        message: "duplicate key value violates unique constraint",
+      },
     });
     vi.mocked(createAdminClient).mockReturnValue(chain as never);
 
@@ -100,6 +103,30 @@ describe("webhookHandlers", () => {
     } as never);
 
     // Should not upsert/update profiles since it returned early
+    expect(chain.upsert).not.toHaveBeenCalled();
+    expect(chain.update).not.toHaveBeenCalled();
+  });
+
+  it("onCheckoutCompleted — throws when idempotency insert fails unexpectedly", async () => {
+    const chain = makeChain(null);
+    (chain.insert as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      data: null,
+      error: {
+        code: "08006",
+        message: "connection failure",
+      },
+    });
+    vi.mocked(createAdminClient).mockReturnValue(chain as never);
+
+    await expect(
+      webhookHandlers.onCheckoutCompleted!({
+        ...baseEvent,
+        customer: { id: "cus_1", email: "user@example.com" },
+        product: { id: "prod_pro", name: "Pro" },
+        metadata: { user_id: "user-123" },
+      } as never),
+    ).rejects.toThrow("webhook_events idempotency insert failed");
+
     expect(chain.upsert).not.toHaveBeenCalled();
     expect(chain.update).not.toHaveBeenCalled();
   });

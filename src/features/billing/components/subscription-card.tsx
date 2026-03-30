@@ -1,16 +1,10 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { openCustomerPortal } from "@/features/billing/actions";
-import type { Subscription } from "@/features/billing/types";
-import { PLANS } from "@/features/billing/types";
-import Link from "next/link";
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { openCustomerPortal } from '@/features/billing/actions';
+import type { Subscription } from '@/features/billing/types';
+import { PLANS } from '@/features/billing/types';
+import Link from 'next/link';
 
 type Props = {
   subscription: Subscription | null;
@@ -18,46 +12,42 @@ type Props = {
 };
 
 function statusVariant(
-  status: Subscription["status"],
-): "default" | "secondary" | "destructive" | "outline" {
+  status: Subscription['status'],
+): 'default' | 'secondary' | 'destructive' | 'outline' {
   switch (status) {
-    case "active":
-      return "default";
-    case "trialing":
-      return "secondary";
-    case "canceled":
-    case "past_due":
-      return "destructive";
+    case 'active':
+      return 'default';
+    case 'trialing':
+      return 'secondary';
+    case 'canceled':
+    case 'past_due':
+      return 'destructive';
     default:
-      return "outline";
+      return 'outline';
   }
 }
 
 function planNameFromId(planId: string | null): string {
-  if (!planId) return "Free";
-  if (planId === process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_PRO) return "Pro";
-  if (planId === process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_BUSINESS)
-    return "Business";
-  return "Pro";
+  if (!planId) return 'Free';
+  if (planId === process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_PRO) return 'Pro';
+  if (planId === process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_BUSINESS) return 'Business';
+  return 'Pro';
 }
 
 function formatDate(dateStr: string | null): string {
-  if (!dateStr) return "—";
-  return new Date(dateStr).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
+  if (!dateStr) return '—';
+  return new Date(dateStr).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
   });
 }
 
 export function SubscriptionCard({ subscription, creditsBalance }: Props) {
   const isActive =
-    subscription &&
-    (subscription.status === "active" || subscription.status === "trialing");
+    subscription && (subscription.status === 'active' || subscription.status === 'trialing');
 
-  const planName = subscription
-    ? planNameFromId(subscription.planId)
-    : "Free";
+  const planName = subscription ? planNameFromId(subscription.planId) : 'Free';
 
   return (
     <div className="grid gap-4 sm:grid-cols-2">
@@ -67,9 +57,7 @@ export function SubscriptionCard({ subscription, creditsBalance }: Props) {
           <div className="flex items-center justify-between">
             <CardTitle className="text-base">Subscription</CardTitle>
             {subscription ? (
-              <Badge variant={statusVariant(subscription.status)}>
-                {subscription.status}
-              </Badge>
+              <Badge variant={statusVariant(subscription.status)}>{subscription.status}</Badge>
             ) : (
               <Badge variant="secondary">free</Badge>
             )}
@@ -78,11 +66,11 @@ export function SubscriptionCard({ subscription, creditsBalance }: Props) {
         </CardHeader>
         <CardContent className="space-y-3">
           {subscription && isActive && (
-            <div className="text-sm text-muted-foreground space-y-1">
+            <div className="space-y-1 text-sm text-muted-foreground">
               <p>
-                Current period:{" "}
+                Current period:{' '}
                 <span className="text-foreground">
-                  {formatDate(subscription.currentPeriodStart)} →{" "}
+                  {formatDate(subscription.currentPeriodStart)} →{' '}
                   {formatDate(subscription.currentPeriodEnd)}
                 </span>
               </p>
@@ -93,7 +81,7 @@ export function SubscriptionCard({ subscription, creditsBalance }: Props) {
               )}
             </div>
           )}
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex flex-wrap gap-2">
             {isActive ? (
               <form action={openCustomerPortal}>
                 <Button size="sm" variant="outline" type="submit">
@@ -121,12 +109,16 @@ export function SubscriptionCard({ subscription, creditsBalance }: Props) {
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-3xl font-bold">
-            {subscription?.planId ===
-            process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_BUSINESS
-              ? "∞"
+            {subscription?.planId === process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_BUSINESS
+              ? '∞'
               : creditsBalance.toLocaleString()}
           </p>
-          <Button size="sm" variant="outline" render={<Link href="/dashboard/credits" />} nativeButton={false}>
+          <Button
+            size="sm"
+            variant="outline"
+            render={<Link href="/dashboard/credits" />}
+            nativeButton={false}
+          >
             View details
           </Button>
         </CardContent>

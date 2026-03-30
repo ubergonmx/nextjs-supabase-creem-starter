@@ -1,7 +1,7 @@
-import Image from 'next/image'
+import Image from 'next/image';
 
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import {
   IconArrowUp,
   IconCalendarCheck,
@@ -11,12 +11,12 @@ import {
   IconSignature,
   IconShieldLock,
   IconCreditCard,
-} from '@tabler/icons-react'
+} from '@tabler/icons-react';
 
-const MESCHAC_AVATAR = 'https://avatars.githubusercontent.com/u/47919550?v=4'
-const BERNARD_AVATAR = 'https://avatars.githubusercontent.com/u/31113941?v=4'
-const THEO_AVATAR = 'https://avatars.githubusercontent.com/u/68236786?v=4'
-const GLODIE_AVATAR = 'https://avatars.githubusercontent.com/u/99137927?v=4'
+const MESCHAC_AVATAR = 'https://avatars.githubusercontent.com/u/47919550?v=4';
+const BERNARD_AVATAR = 'https://avatars.githubusercontent.com/u/31113941?v=4';
+const THEO_AVATAR = 'https://avatars.githubusercontent.com/u/68236786?v=4';
+const GLODIE_AVATAR = 'https://avatars.githubusercontent.com/u/99137927?v=4';
 
 export default function FeaturesSection() {
   return (
@@ -48,7 +48,8 @@ export default function FeaturesSection() {
                 Payments &amp; Subscriptions
               </h3>
               <p className="mt-3 text-balance text-muted-foreground">
-                Creem integration with checkout, webhooks, and subscription lifecycle fully wired up.
+                Creem integration with checkout, webhooks, and subscription lifecycle fully wired
+                up.
               </p>
 
               <CodeReviewIllustration />
@@ -71,7 +72,7 @@ export default function FeaturesSection() {
         </div>
       </div>
     </section>
-  )
+  );
 }
 
 const MeetingIllustration = () => {
@@ -113,8 +114,8 @@ const MeetingIllustration = () => {
       </div>
       <div className="text-sm font-medium text-muted-foreground">ML Pipeline Discussion</div>
     </Card>
-  )
-}
+  );
+};
 
 const CodeReviewIllustration = () => {
   return (
@@ -150,8 +151,8 @@ const CodeReviewIllustration = () => {
         </div>
       </Card>
     </div>
-  )
-}
+  );
+};
 
 const AIAssistantIllustration = () => {
   return (
@@ -192,5 +193,5 @@ const AIAssistantIllustration = () => {
         </div>
       </div>
     </Card>
-  )
-}
+  );
+};

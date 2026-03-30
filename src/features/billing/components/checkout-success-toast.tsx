@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 export function CheckoutSuccessToast() {
   const router = useRouter();
@@ -11,11 +11,11 @@ export function CheckoutSuccessToast() {
   useEffect(() => {
     if (fired.current) return;
     fired.current = true;
-    toast.success("Payment successful! Your plan will update shortly.", {
-      position: "top-center",
+    toast.success('Payment successful! Your plan will update shortly.', {
+      position: 'top-center',
       duration: 6000,
     });
-    router.replace("/dashboard");
+    router.replace('/dashboard');
   }, [router]);
 
   return null;

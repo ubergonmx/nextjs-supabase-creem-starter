@@ -1,13 +1,13 @@
-"use server";
+'use server';
 
-import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
-import { createCheckout } from "@/lib/creem/client";
-import { redirect } from "next/navigation";
-import type { CreditTransaction } from "../types";
-import { spendCreditsSchema } from "../schema";
+import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
+import { createCheckout } from '@/lib/creem/client';
+import { redirect } from 'next/navigation';
+import type { CreditTransaction } from '../types';
+import { spendCreditsSchema } from '../schema';
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
 
 export async function getCreditsBalance(): Promise<number> {
   const supabase = await createClient();
@@ -17,11 +17,7 @@ export async function getCreditsBalance(): Promise<number> {
 
   if (!user) return 0;
 
-  const { data } = await supabase
-    .from("credits")
-    .select("balance")
-    .eq("user_id", user.id)
-    .single();
+  const { data } = await supabase.from('credits').select('balance').eq('user_id', user.id).single();
 
   return data?.balance ?? 0;
 }
@@ -29,7 +25,7 @@ export async function getCreditsBalance(): Promise<number> {
 export async function purchaseCredits(): Promise<void> {
   const productId = process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_CREDITS;
   if (!productId) {
-    redirect("/dashboard/credits?error=product_not_configured");
+    redirect('/dashboard/credits?error=product_not_configured');
   }
 
   const supabase = await createClient();
@@ -37,7 +33,7 @@ export async function purchaseCredits(): Promise<void> {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) redirect("/login");
+  if (!user) redirect('/login');
 
   let checkoutUrl: string;
   try {
@@ -49,7 +45,7 @@ export async function purchaseCredits(): Promise<void> {
     });
     checkoutUrl = result.checkout_url;
   } catch (e) {
-    const message = e instanceof Error ? e.message : "Checkout unavailable";
+    const message = e instanceof Error ? e.message : 'Checkout unavailable';
     redirect(`/dashboard/credits?error=${encodeURIComponent(message)}`);
   }
 
@@ -70,24 +66,22 @@ export async function spendCredits(
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) return { success: false, error: "Not authenticated" };
+  if (!user) return { success: false, error: 'Not authenticated' };
 
   const admin = createAdminClient();
-  const { data, error } = await admin.rpc("spend_credits", {
+  const { data, error } = await admin.rpc('spend_credits', {
     p_user_id: user.id,
     p_amount: amount,
     p_description: description,
   });
 
   if (error) return { success: false, error: error.message };
-  if (!data) return { success: false, error: "Insufficient credits" };
+  if (!data) return { success: false, error: 'Insufficient credits' };
 
   return { success: true };
 }
 
-export async function getCreditTransactions(
-  limit = 50,
-): Promise<CreditTransaction[]> {
+export async function getCreditTransactions(limit = 50): Promise<CreditTransaction[]> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -96,10 +90,10 @@ export async function getCreditTransactions(
   if (!user) return [];
 
   const { data } = await supabase
-    .from("credit_transactions")
-    .select("*")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false })
+    .from('credit_transactions')
+    .select('*')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false })
     .limit(limit);
 
   if (!data) return [];
@@ -108,7 +102,7 @@ export async function getCreditTransactions(
     id: row.id as string,
     userId: row.user_id as string,
     amount: row.amount as number,
-    type: row.type as CreditTransaction["type"],
+    type: row.type as CreditTransaction['type'],
     description: (row.description as string) ?? null,
     createdAt: row.created_at as string,
   }));

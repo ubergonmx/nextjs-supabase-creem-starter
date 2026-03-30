@@ -11,4 +11,4 @@ export const BaseUI = (props: React.SVGProps<SVGSVGElement>) => (
       fill="currentColor"
     />
   </svg>
-)
+);

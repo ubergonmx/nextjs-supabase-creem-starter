@@ -1,5 +1,5 @@
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -7,13 +7,13 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
-import { IconCheck } from '@tabler/icons-react'
-import { CheckoutButton } from '@/features/billing/components/checkout-button'
+} from '@/components/ui/card';
+import { IconCheck } from '@tabler/icons-react';
+import { CheckoutButton } from '@/features/billing/components/checkout-button';
 
 export function PricingSection() {
-  const proProductId = process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_PRO
-  const businessProductId = process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_BUSINESS
+  const proProductId = process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_PRO;
+  const businessProductId = process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_BUSINESS;
 
   return (
     <section className="py-16 md:py-32">
@@ -37,16 +37,14 @@ export function PricingSection() {
               <hr className="border-dashed" />
 
               <ul className="list-outside space-y-3 text-sm">
-                {[
-                  'Supabase auth (email + OAuth)',
-                  '100 credits included',
-                  'Community support',
-                ].map((item, index) => (
-                  <li key={index} className="flex items-center gap-2">
-                    <IconCheck size={12} />
-                    {item}
-                  </li>
-                ))}
+                {['Supabase auth (email + OAuth)', '100 credits included', 'Community support'].map(
+                  (item, index) => (
+                    <li key={index} className="flex items-center gap-2">
+                      <IconCheck size={12} />
+                      {item}
+                    </li>
+                  ),
+                )}
               </ul>
             </CardContent>
 
@@ -117,16 +115,14 @@ export function PricingSection() {
               <hr className="border-dashed" />
 
               <ul className="list-outside space-y-3 text-sm">
-                {[
-                  'Everything in Pro',
-                  'Unlimited credits',
-                  'Dedicated support channel',
-                ].map((item, index) => (
-                  <li key={index} className="flex items-center gap-2">
-                    <IconCheck size={12} />
-                    {item}
-                  </li>
-                ))}
+                {['Everything in Pro', 'Unlimited credits', 'Dedicated support channel'].map(
+                  (item, index) => (
+                    <li key={index} className="flex items-center gap-2">
+                      <IconCheck size={12} />
+                      {item}
+                    </li>
+                  ),
+                )}
               </ul>
             </CardContent>
 
@@ -145,5 +141,5 @@ export function PricingSection() {
         </div>
       </div>
     </section>
-  )
+  );
 }

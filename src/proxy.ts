@@ -1,8 +1,8 @@
-import { type NextRequest, NextResponse } from "next/server";
-import { createServerClient } from "@supabase/ssr";
+import { type NextRequest, NextResponse } from 'next/server';
+import { createServerClient } from '@supabase/ssr';
 
-const PROTECTED_PATHS = ["/dashboard"];
-const AUTH_PATHS = ["/login", "/signup"];
+const PROTECTED_PATHS = ['/dashboard'];
+const AUTH_PATHS = ['/login', '/signup'];
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -38,16 +38,16 @@ export async function proxy(request: NextRequest) {
   const isAuthPage = AUTH_PATHS.some((p) => path.startsWith(p));
 
   if (isProtected && !user) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 
   if (isAuthPage && user) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
   return response;
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon\\.svg|api/).*)"],
+  matcher: ['/((?!_next/static|_next/image|favicon\\.svg|api/).*)'],
 };

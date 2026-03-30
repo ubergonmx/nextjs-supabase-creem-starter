@@ -363,4 +363,4 @@ export const OXCFull = (props: React.SVGProps<SVGSVGElement>) => (
       </filter>
     </defs>
   </svg>
-)
+);

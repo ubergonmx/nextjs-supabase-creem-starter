@@ -1,7 +1,5 @@
 const CREEM_BASE_URL =
-  process.env.NODE_ENV === "production"
-    ? "https://api.creem.io"
-    : "https://test-api.creem.io";
+  process.env.NODE_ENV === 'production' ? 'https://api.creem.io' : 'https://test-api.creem.io';
 
 // ---------- Types ----------
 export type CreemSubscription = {
@@ -32,18 +30,18 @@ async function creemFetch<T>(
   }
 
   const res = await fetch(url.toString(), {
-    method: options?.method ?? "GET",
+    method: options?.method ?? 'GET',
     headers: {
-      "Content-Type": "application/json",
-      "x-api-key": process.env.CREEM_API_KEY!,
+      'Content-Type': 'application/json',
+      'x-api-key': process.env.CREEM_API_KEY!,
     },
     ...(options?.body ? { body: JSON.stringify(options.body) } : {}),
   });
 
   if (!res.ok) {
-    const text = await res.text().catch(() => "unknown error");
+    const text = await res.text().catch(() => 'unknown error');
     throw new Error(
-      `Creem API error ${res.status} on ${options?.method ?? "GET"} ${path}: ${text}`,
+      `Creem API error ${res.status} on ${options?.method ?? 'GET'} ${path}: ${text}`,
     );
   }
 
@@ -57,8 +55,8 @@ export async function createCheckout(params: {
   customerEmail: string;
   metadata?: Record<string, string>;
 }): Promise<{ checkout_url: string }> {
-  return creemFetch<{ checkout_url: string }>("/v1/checkouts", {
-    method: "POST",
+  return creemFetch<{ checkout_url: string }>('/v1/checkouts', {
+    method: 'POST',
     body: {
       product_id: params.productId,
       success_url: params.successUrl,
@@ -69,37 +67,31 @@ export async function createCheckout(params: {
 }
 
 // ---------- Subscriptions ----------
-export async function getSubscription(
-  subscriptionId: string,
-): Promise<CreemSubscription> {
-  return creemFetch<CreemSubscription>("/v1/subscriptions", {
+export async function getSubscription(subscriptionId: string): Promise<CreemSubscription> {
+  return creemFetch<CreemSubscription>('/v1/subscriptions', {
     params: { subscription_id: subscriptionId },
   });
 }
 
 export async function cancelSubscription(
   subscriptionId: string,
-  mode: "scheduled" | "immediate",
+  mode: 'scheduled' | 'immediate',
 ): Promise<void> {
   await creemFetch<void>(`/v1/subscriptions/${subscriptionId}/cancel`, {
-    method: "POST",
+    method: 'POST',
     body: { mode },
   });
 }
 
-export async function pauseSubscription(
-  subscriptionId: string,
-): Promise<void> {
+export async function pauseSubscription(subscriptionId: string): Promise<void> {
   await creemFetch<void>(`/v1/subscriptions/${subscriptionId}/pause`, {
-    method: "POST",
+    method: 'POST',
   });
 }
 
-export async function resumeSubscription(
-  subscriptionId: string,
-): Promise<void> {
+export async function resumeSubscription(subscriptionId: string): Promise<void> {
   await creemFetch<void>(`/v1/subscriptions/${subscriptionId}/resume`, {
-    method: "POST",
+    method: 'POST',
   });
 }
 
@@ -108,10 +100,10 @@ export async function upgradeSubscription(
   productId: string,
 ): Promise<void> {
   await creemFetch<void>(`/v1/subscriptions/${subscriptionId}/upgrade`, {
-    method: "POST",
+    method: 'POST',
     body: {
       product_id: productId,
-      update_behavior: "proration-charge-immediately",
+      update_behavior: 'proration-charge-immediately',
     },
   });
 }
@@ -120,9 +112,8 @@ export async function upgradeSubscription(
 export async function getCustomerPortalLink(
   customerId: string,
 ): Promise<{ customer_portal_link: string }> {
-  return creemFetch<{ customer_portal_link: string }>("/v1/customers/billing", {
-    method: "POST",
+  return creemFetch<{ customer_portal_link: string }>('/v1/customers/billing', {
+    method: 'POST',
     body: { customer_id: customerId },
   });
 }
-

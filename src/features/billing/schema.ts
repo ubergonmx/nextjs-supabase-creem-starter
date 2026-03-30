@@ -1,9 +1,9 @@
-import * as z from "zod";
+import * as z from 'zod';
 
 // ---------- Action input schemas ----------
 
 export const createCheckoutSchema = z.object({
-  productId: z.string().min(1, "Product ID is required"),
+  productId: z.string().min(1, 'Product ID is required'),
 });
 
 // ---------- Creem webhook payload schemas ----------

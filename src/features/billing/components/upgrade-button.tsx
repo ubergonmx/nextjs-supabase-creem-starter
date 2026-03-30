@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { upgradeUserSubscription } from "@/features/billing/actions";
-import { useTransition } from "react";
+import { Button } from '@/components/ui/button';
+import { upgradeUserSubscription } from '@/features/billing/actions';
+import { useTransition } from 'react';
 
 export function UpgradeButton({
   productId,
   children,
-  variant = "default",
+  variant = 'default',
 }: {
   productId: string;
   children: React.ReactNode;
-  variant?: "default" | "outline";
+  variant?: 'default' | 'outline';
 }) {
   const [pending, startTransition] = useTransition();
 
@@ -20,11 +20,9 @@ export function UpgradeButton({
       variant={variant}
       className="w-full"
       disabled={pending}
-      onClick={() =>
-        startTransition(() => upgradeUserSubscription(productId))
-      }
+      onClick={() => startTransition(() => upgradeUserSubscription(productId))}
     >
-      {pending ? "Upgrading…" : children}
+      {pending ? 'Upgrading…' : children}
     </Button>
   );
 }

@@ -1,13 +1,13 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
+import Link from 'next/link';
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@/components/ui/dropdown-menu';
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -17,21 +17,21 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from '@/components/ui/sidebar'
-import { IconDots, IconEyeOff, IconPin } from '@tabler/icons-react'
+} from '@/components/ui/sidebar';
+import { IconDots, IconEyeOff, IconPin } from '@tabler/icons-react';
 
 export function NavFeatures({
   items,
   label = 'Features',
 }: {
   items: {
-    name: string
-    url: string
-    icon: React.ReactNode
-  }[]
-  label?: string
+    name: string;
+    url: string;
+    icon: React.ReactNode;
+  }[];
+  label?: string;
 }) {
-  const { isMobile } = useSidebar()
+  const { isMobile } = useSidebar();
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
@@ -71,5 +71,5 @@ export function NavFeatures({
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
-  )
+  );
 }

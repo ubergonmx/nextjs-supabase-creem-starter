@@ -12,4 +12,4 @@ export type AuthActionState =
     }
   | undefined;
 
-export type OAuthProvider = "github" | "google";
+export type OAuthProvider = 'github' | 'google';

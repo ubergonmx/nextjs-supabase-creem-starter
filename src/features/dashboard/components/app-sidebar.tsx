@@ -1,12 +1,12 @@
-'use client'
+'use client';
 
-import * as React from 'react'
-import Link from 'next/link'
+import * as React from 'react';
+import Link from 'next/link';
 
-import { NavMain } from '@/features/dashboard/components/nav-main'
-import { NavFeatures } from './nav-features'
-import { NavSecondary } from '@/features/dashboard/components/nav-secondary'
-import { NavUser } from '@/features/dashboard/components/nav-user'
+import { NavMain } from '@/features/dashboard/components/nav-main';
+import { NavFeatures } from './nav-features';
+import { NavSecondary } from '@/features/dashboard/components/nav-secondary';
+import { NavUser } from '@/features/dashboard/components/nav-user';
 import {
   Sidebar,
   SidebarContent,
@@ -15,7 +15,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from '@/components/ui/sidebar'
+} from '@/components/ui/sidebar';
 import {
   IconDashboard,
   IconSettings,
@@ -24,8 +24,8 @@ import {
   IconCoins,
   IconCalendarWeek,
   IconMessageCircleUser,
-} from '@tabler/icons-react'
-import { Logo } from '@/components/logo'
+} from '@tabler/icons-react';
+import { Logo } from '@/components/logo';
 
 const navMain = [
   {
@@ -48,7 +48,7 @@ const navMain = [
     url: '/dashboard/settings',
     icon: <IconSettings />,
   },
-]
+];
 
 const navSecondary = [
   {
@@ -56,7 +56,7 @@ const navSecondary = [
     url: '#',
     icon: <IconHelp />,
   },
-]
+];
 
 const navFeatures = [
   {
@@ -69,15 +69,15 @@ const navFeatures = [
     url: '#',
     icon: <IconCalendarWeek />,
   },
-]
+];
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
   user: {
-    name: string
-    email: string
-    avatar: string
-  }
-}
+    name: string;
+    email: string;
+    avatar: string;
+  };
+};
 
 export function AppSidebar({ user, ...props }: AppSidebarProps) {
   return (
@@ -103,5 +103,5 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
         <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }

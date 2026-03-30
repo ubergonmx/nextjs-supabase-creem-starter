@@ -1,5 +1,5 @@
-import { Logo } from '@/components/logo'
-import Link from 'next/link'
+import { Logo } from '@/components/logo';
+import Link from 'next/link';
 
 const links = [
   {
@@ -29,7 +29,7 @@ const links = [
       { label: 'Security', href: '#' },
     ],
   },
-]
+];
 
 const socials = [
   {
@@ -140,7 +140,7 @@ const socials = [
       </svg>
     ),
   },
-]
+];
 
 export function FooterSection() {
   return (
@@ -201,5 +201,5 @@ export function FooterSection() {
         </div>
       </div>
     </footer>
-  )
+  );
 }

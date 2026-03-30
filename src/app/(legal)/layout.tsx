@@ -1,6 +1,6 @@
-import type { Metadata } from 'next'
-import { Header } from '@/components/header'
-import { FooterSection } from '@/features/landing/components/footer-section'
+import type { Metadata } from 'next';
+import { Header } from '@/components/header';
+import { FooterSection } from '@/features/landing/components/footer-section';
 
 export const metadata: Metadata = {
   title: {
@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     default: 'Legal | CreemKit',
   },
   description: 'Legal documents for CreemKit, including privacy policy and terms of service.',
-}
+};
 
 export default function LegalLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -19,5 +19,5 @@ export default function LegalLayout({ children }: { children: React.ReactNode })
       </section>
       <FooterSection />
     </>
-  )
+  );
 }

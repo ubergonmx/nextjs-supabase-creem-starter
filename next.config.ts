@@ -1,5 +1,5 @@
-import createMDX from '@next/mdx'
-import type { NextConfig } from 'next'
+import createMDX from '@next/mdx';
+import type { NextConfig } from 'next';
 
 const securityHeaders = [
   // Prevents MIME-type sniffing (CVE-2006-3396)
@@ -10,7 +10,7 @@ const securityHeaders = [
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
   // Restricts access to browser features not used by the app
   { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
-]
+];
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -32,15 +32,15 @@ const nextConfig: NextConfig = {
         source: '/(.*)',
         headers: securityHeaders,
       },
-    ]
+    ];
   },
-}
+};
 
 const withMDX = createMDX({
   options: {
     remarkPlugins: [],
     rehypePlugins: [],
   },
-})
+});
 
-export default withMDX(nextConfig)
+export default withMDX(nextConfig);

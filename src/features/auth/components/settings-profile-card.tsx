@@ -1,29 +1,13 @@
-"use client";
+'use client';
 
-import { useActionState } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Field,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { updateProfile } from "@/features/auth/actions/profile";
+import { useActionState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { updateProfile } from '@/features/auth/actions/profile';
 
-export function SettingsProfileCard({
-  fullName,
-  email,
-}: {
-  fullName: string;
-  email: string;
-}) {
+export function SettingsProfileCard({ fullName, email }: { fullName: string; email: string }) {
   const [state, action, pending] = useActionState(updateProfile, undefined);
 
   return (
@@ -46,33 +30,20 @@ export function SettingsProfileCard({
                 required
               />
               {state?.fieldErrors?.fullName && (
-                <p className="text-sm text-destructive">
-                  {state.fieldErrors.fullName[0]}
-                </p>
+                <p className="text-sm text-destructive">{state.fieldErrors.fullName[0]}</p>
               )}
             </Field>
             <Field>
               <FieldLabel htmlFor="email">Email</FieldLabel>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                value={email}
-                readOnly
-                disabled
-              />
-              <p className="text-xs text-muted-foreground">
-                Email cannot be changed here.
-              </p>
+              <Input id="email" name="email" type="email" value={email} readOnly disabled />
+              <p className="text-xs text-muted-foreground">Email cannot be changed here.</p>
             </Field>
-            {state?.error && (
-              <p className="text-sm text-destructive">{state.error}</p>
-            )}
+            {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
             {state !== undefined && !state?.error && !state?.fieldErrors && (
               <p className="text-sm text-green-600">Profile updated!</p>
             )}
             <Button type="submit" disabled={pending}>
-              {pending ? "Saving…" : "Save Changes"}
+              {pending ? 'Saving…' : 'Save Changes'}
             </Button>
           </FieldGroup>
         </form>

@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useState } from "react";
-import { getCreditsBalance } from "@/features/credits/actions";
+import { useCallback, useEffect, useState } from 'react';
+import { getCreditsBalance } from '@/features/credits/actions';
 
 export function useCredits() {
   const [balance, setBalance] = useState<number>(0);

@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useState } from "react";
-import { getUserSubscription } from "@/features/billing/actions";
-import type { Subscription } from "@/features/billing/types";
+import { useCallback, useEffect, useState } from 'react';
+import { getUserSubscription } from '@/features/billing/actions';
+import type { Subscription } from '@/features/billing/types';
 
 export function useSubscription() {
   const [subscription, setSubscription] = useState<Subscription | null>(null);

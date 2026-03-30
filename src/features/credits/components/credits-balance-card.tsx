@@ -1,12 +1,6 @@
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { purchaseCredits } from "@/features/credits/actions";
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { purchaseCredits } from '@/features/credits/actions';
 
 export function CreditsBalanceCard({ balance }: { balance: number }) {
   return (
@@ -16,9 +10,7 @@ export function CreditsBalanceCard({ balance }: { balance: number }) {
         <CardDescription>Available credits in your account</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <p className="text-5xl font-bold tracking-tight">
-          {balance.toLocaleString()}
-        </p>
+        <p className="text-5xl font-bold tracking-tight">{balance.toLocaleString()}</p>
         <form action={purchaseCredits}>
           <Button type="submit" variant="outline" size="sm">
             Buy Credits

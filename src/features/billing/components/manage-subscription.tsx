@@ -28,7 +28,7 @@ export function ManageSubscription({ subscription }: { subscription: Subscriptio
 
   const isActive = subscription.status === 'active' || subscription.status === 'trialing';
 
-  async function handleCancel() {
+  function handleCancel() {
     startTransition(async () => {
       const result = await cancelUserSubscription(cancelMode);
       if (result.error) {
@@ -43,7 +43,7 @@ export function ManageSubscription({ subscription }: { subscription: Subscriptio
     });
   }
 
-  async function handleResume() {
+  function handleResume() {
     startTransition(async () => {
       const result = await resumeUserSubscription();
       if (result.error) {

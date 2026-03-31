@@ -130,20 +130,17 @@ export const webhookHandlers = {
     if (await isDuplicate(admin, event.webhookId, 'subscription.canceled')) return;
 
     // Creem fires this for both immediate and scheduled cancellations.
-    // If the period end is still in the future the subscription is only scheduled
-    // to cancel — keep it active and just flip cancel_at_period_end. If the
-    // period has already passed (or there is no period) it was an immediate
-    // cancellation and the subscription should be marked canceled now.
-    const isScheduled =
-      event.current_period_end_date != null &&
-      new Date(event.current_period_end_date) > new Date();
+    // For immediate: Creem sets event.status to 'canceled' immediately.
+    // For scheduled: event.status remains 'active'; access continues until period end.
+    const isCanceledImmediately =
+      event.status === 'canceled' || (event.status as string) === 'cancelled';
 
     await admin
       .from('subscriptions')
       .update(
-        isScheduled
-          ? { cancel_at_period_end: true }
-          : { status: 'canceled', cancel_at_period_end: false },
+        isCanceledImmediately
+          ? { status: 'canceled', cancel_at_period_end: false }
+          : { cancel_at_period_end: true },
       )
       .eq('creem_subscription_id', event.id);
   },

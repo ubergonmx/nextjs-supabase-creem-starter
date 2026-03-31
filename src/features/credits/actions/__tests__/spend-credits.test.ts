@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 // Mock both supabase clients
 vi.mock('@/lib/supabase/server', () => ({
   createClient: vi.fn(),
+  getUser: vi.fn(),
 }));
 
 vi.mock('@/lib/supabase/admin', () => ({
@@ -14,7 +15,7 @@ vi.mock('next/cache', () => ({
   revalidatePath: vi.fn(),
 }));
 
-import { createClient } from '@/lib/supabase/server';
+import { createClient, getUser } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { spendCredits } from '../credits';
 
@@ -22,11 +23,8 @@ describe('spendCredits', () => {
   const mockUser = { id: 'user-123', email: 'test@example.com' };
 
   beforeEach(() => {
-    vi.mocked(createClient).mockResolvedValue({
-      auth: {
-        getUser: vi.fn().mockResolvedValue({ data: { user: mockUser } }),
-      },
-    } as never);
+    vi.mocked(getUser).mockResolvedValue(mockUser as never);
+    vi.mocked(createClient).mockResolvedValue({} as never);
   });
 
   it('returns success when RPC returns true', async () => {
@@ -57,11 +55,7 @@ describe('spendCredits', () => {
   });
 
   it('returns not authenticated when no user', async () => {
-    vi.mocked(createClient).mockResolvedValue({
-      auth: {
-        getUser: vi.fn().mockResolvedValue({ data: { user: null } }),
-      },
-    } as never);
+    vi.mocked(getUser).mockResolvedValue(null);
 
     const result = await spendCredits(10, 'no user');
     expect(result).toEqual({ success: false, error: 'Not authenticated' });

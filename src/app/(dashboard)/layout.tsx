@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { createClient } from '@/lib/supabase/server';
+import { getUser } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { AppSidebar } from '@/features/dashboard/components/app-sidebar';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
@@ -20,14 +20,9 @@ export const metadata: Metadata = {
 };
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const [user, subscription] = await Promise.all([getUser(), getUserSubscription()]);
 
   if (!user) redirect('/login');
-
-  const subscription = await getUserSubscription();
   const isActiveSub =
     subscription?.status === 'active' || subscription?.status === 'trialing';
   const planName = planNameFromId(isActiveSub ? (subscription?.planId ?? null) : null) as

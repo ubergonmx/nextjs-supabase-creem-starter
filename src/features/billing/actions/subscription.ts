@@ -1,6 +1,7 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
+import { createClient, getUser } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import {
   cancelSubscription,
   resumeSubscription,
@@ -38,13 +39,11 @@ async function getLatestActiveSubscription(userId: string) {
 }
 
 export async function getUserSubscription(): Promise<Subscription | null> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
 
   if (!user) return null;
 
+  const supabase = await createClient();
   const { data } = await supabase
     .from('subscriptions')
     .select('*')
@@ -58,10 +57,7 @@ export async function getUserSubscription(): Promise<Subscription | null> {
 }
 
 export async function cancelUserSubscription(): Promise<{ error?: string }> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
 
   if (!user) return { error: 'Not authenticated' };
 
@@ -70,7 +66,8 @@ export async function cancelUserSubscription(): Promise<{ error?: string }> {
 
   try {
     await cancelSubscription(sub.creem_subscription_id, 'scheduled');
-    await supabase
+    const admin = createAdminClient();
+    await admin
       .from('subscriptions')
       .update({ cancel_at_period_end: true })
       .eq('creem_subscription_id', sub.creem_subscription_id);
@@ -83,10 +80,7 @@ export async function cancelUserSubscription(): Promise<{ error?: string }> {
 }
 
 export async function resumeUserSubscription(): Promise<{ error?: string }> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
 
   if (!user) return { error: 'Not authenticated' };
 
@@ -95,7 +89,8 @@ export async function resumeUserSubscription(): Promise<{ error?: string }> {
 
   try {
     await resumeSubscription(sub.creem_subscription_id);
-    await supabase
+    const admin = createAdminClient();
+    await admin
       .from('subscriptions')
       .update({ cancel_at_period_end: false, status: 'active' })
       .eq('creem_subscription_id', sub.creem_subscription_id);
@@ -110,10 +105,7 @@ export async function resumeUserSubscription(): Promise<{ error?: string }> {
 export async function upgradeUserSubscription(
   newProductId: string,
 ): Promise<{ error?: string }> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
 
   if (!user) return { error: 'Not authenticated' };
 
@@ -122,7 +114,8 @@ export async function upgradeUserSubscription(
 
   try {
     await upgradeSubscription(sub.creem_subscription_id, newProductId);
-    await supabase
+    const admin = createAdminClient();
+    await admin
       .from('subscriptions')
       .update({ plan_id: newProductId, status: 'active', cancel_at_period_end: false })
       .eq('creem_subscription_id', sub.creem_subscription_id);
@@ -135,10 +128,7 @@ export async function upgradeUserSubscription(
 }
 
 export async function pauseUserSubscription(): Promise<{ error?: string }> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
 
   if (!user) return { error: 'Not authenticated' };
 
@@ -147,7 +137,8 @@ export async function pauseUserSubscription(): Promise<{ error?: string }> {
 
   try {
     await pauseSubscription(sub.creem_subscription_id);
-    await supabase
+    const admin = createAdminClient();
+    await admin
       .from('subscriptions')
       .update({ status: 'paused' })
       .eq('creem_subscription_id', sub.creem_subscription_id);

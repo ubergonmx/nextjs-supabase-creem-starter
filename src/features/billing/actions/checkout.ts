@@ -1,6 +1,6 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
+import { createClient, getUser } from '@/lib/supabase/server';
 import { createCheckout } from '@/lib/creem/client';
 import { redirect } from 'next/navigation';
 import { PLANS } from '../types';
@@ -25,13 +25,11 @@ export async function createCheckoutSession(productId: string): Promise<void> {
     redirect('/pricing?error=product_not_configured');
   }
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
 
   if (!user) redirect('/login');
 
+  const supabase = await createClient();
   const { data: existingSub } = await supabase
     .from('subscriptions')
     .select('status')

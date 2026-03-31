@@ -1,17 +1,15 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
+import { createClient, getUser } from '@/lib/supabase/server';
 import { getCustomerPortalLink } from '@/lib/creem/client';
 import { redirect } from 'next/navigation';
 
 export async function openCustomerPortal(): Promise<void> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
 
   if (!user) redirect('/login');
 
+  const supabase = await createClient();
   const { data: profile } = await supabase
     .from('profiles')
     .select('creem_customer_id')

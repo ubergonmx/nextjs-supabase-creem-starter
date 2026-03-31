@@ -1,6 +1,6 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
+import { createClient, getUser } from '@/lib/supabase/server';
 import type { AuthActionState } from '../types';
 import { profileSchema } from '../schema';
 
@@ -15,13 +15,11 @@ export async function updateProfile(
     return { fieldErrors: result.error.flatten().fieldErrors };
   }
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
 
   if (!user) return { error: 'Not authenticated' };
 
+  const supabase = await createClient();
   const { error } = await supabase
     .from('profiles')
     .update({ full_name: result.data.fullName })

@@ -1,19 +1,17 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
+import { createClient, getUser } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { refresh, revalidatePath } from 'next/cache';
 import type { CreditTransaction } from '../types';
 import { spendCreditsSchema } from '../schema';
 
 export async function getCreditsBalance(): Promise<number> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
 
   if (!user) return 0;
 
+  const supabase = await createClient();
   const { data } = await supabase.from('credits').select('balance').eq('user_id', user.id).single();
 
   return data?.balance ?? 0;
@@ -28,13 +26,11 @@ export async function spendCredits(
     return { success: false, error: validation.error.issues[0].message };
   }
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
 
   if (!user) return { success: false, error: 'Not authenticated' };
 
+  const supabase = await createClient();
   const admin = createAdminClient();
   const { data, error } = await admin.rpc('spend_credits', {
     p_user_id: user.id,
@@ -51,13 +47,11 @@ export async function spendCredits(
 }
 
 export async function getCreditTransactions(limit = 50): Promise<CreditTransaction[]> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
 
   if (!user) return [];
 
+  const supabase = await createClient();
   const { data } = await supabase
     .from('credit_transactions')
     .select('*')

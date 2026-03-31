@@ -152,7 +152,7 @@ describe('webhookHandlers', () => {
     expect(chain.update).not.toHaveBeenCalled();
   });
 
-  it('onSubscriptionCanceled — immediate: sets status to canceled when no future period end', async () => {
+  it('onSubscriptionCanceled — immediate: sets status to canceled when event.status is "canceled"', async () => {
     const chain = makeChain(null);
     (chain.insert as ReturnType<typeof vi.fn>).mockResolvedValueOnce({ data: null, error: null });
     vi.mocked(createAdminClient).mockReturnValue(chain as never);
@@ -160,23 +160,21 @@ describe('webhookHandlers', () => {
     await webhookHandlers.onSubscriptionCanceled!({
       ...baseEvent,
       id: 'sub_1',
-      current_period_end_date: null,
+      status: 'canceled',
     } as never);
 
     expect(chain.update).toHaveBeenCalledWith({ status: 'canceled', cancel_at_period_end: false });
   });
 
-  it('onSubscriptionCanceled — scheduled: sets cancel_at_period_end when period end is future', async () => {
+  it('onSubscriptionCanceled — scheduled: sets cancel_at_period_end when event.status is "active"', async () => {
     const chain = makeChain(null);
     (chain.insert as ReturnType<typeof vi.fn>).mockResolvedValueOnce({ data: null, error: null });
     vi.mocked(createAdminClient).mockReturnValue(chain as never);
 
-    const futureDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
-
     await webhookHandlers.onSubscriptionCanceled!({
       ...baseEvent,
       id: 'sub_1',
-      current_period_end_date: futureDate,
+      status: 'active',
     } as never);
 
     expect(chain.update).toHaveBeenCalledWith({ cancel_at_period_end: true });

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { createClient } from '@/lib/supabase/server';
+import { getUser } from '@/lib/supabase/server';
 import { SettingsProfileCard } from '@/features/auth/components/settings-profile-card';
 
 export const metadata: Metadata = {
@@ -8,10 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default async function AccountPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
 
   const fullName = (user?.user_metadata?.full_name as string) ?? '';
   const email = user?.email ?? '';

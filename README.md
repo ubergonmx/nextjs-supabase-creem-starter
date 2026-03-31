@@ -284,6 +284,12 @@ cp .env.example .env.local
 
 6. After creating each product, copy its `prod_` ID (shown on the product detail page) into your `.env.local`
 
+7. (Optional) Override API environment:
+
+- Template default (local + deployed): `https://test-api.creem.io`
+- To switch to live mode, set `CREEM_API_BASE_URL=https://api.creem.io`
+- Test keys only work with `test-api.creem.io`; production keys only work with `api.creem.io`
+
 ### 4. Run locally
 
 ```bash
@@ -334,6 +340,11 @@ Once you have your production URL, connect the remaining services:
    - Click **Save** and copy the generated webhook secret
 4. **Add webhook secret**: Back in Vercel **Settings > Environment Variables**, add `CREEM_WEBHOOK_SECRET` with the value from the previous step
 5. **Redeploy**: Go to **Deployments**, click the three dots on the latest deployment, and hit **Redeploy** to apply the new environment variables
+
+6. **Troubleshoot checkout 403/forbidden**:
+
+- Ensure `CREEM_API_KEY` matches the API environment (`CREEM_API_BASE_URL` or template default `https://test-api.creem.io`)
+- Ensure `NEXT_PUBLIC_CREEM_PRODUCT_ID_*` values are from the same Creem store/mode as the API key
 
 ### 7. Verify Everything
 

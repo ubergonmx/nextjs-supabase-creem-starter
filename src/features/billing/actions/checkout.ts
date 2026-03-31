@@ -59,6 +59,9 @@ export async function createCheckoutSession(productId: string): Promise<void> {
   } catch (e) {
     const message = e instanceof Error ? e.message : 'Checkout unavailable';
     console.error('createCheckoutSession failed: ', message);
+    if (message.includes('Creem API error 403')) {
+      redirect('/pricing?error=checkout_forbidden');
+    }
     redirect('/pricing?error=checkout_unavailable');
   }
 

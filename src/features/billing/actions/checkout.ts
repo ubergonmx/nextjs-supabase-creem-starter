@@ -16,7 +16,7 @@ export async function createCheckoutSession(productId: string): Promise<void> {
   }
 
   const allowedProductIds = new Set(
-    [PLANS.pro.productId, PLANS.business.productId].filter(
+    [PLANS.starter.productId, PLANS.pro.productId, PLANS.business.productId].filter(
       (id): id is string => typeof id === 'string' && id.length > 0,
     ),
   );
@@ -31,6 +31,18 @@ export async function createCheckoutSession(productId: string): Promise<void> {
   } = await supabase.auth.getUser();
 
   if (!user) redirect('/login');
+
+  const { data: existingSub } = await supabase
+    .from('subscriptions')
+    .select('status')
+    .eq('user_id', user.id)
+    .in('status', ['active', 'trialing'])
+    .limit(1)
+    .maybeSingle();
+
+  if (existingSub) {
+    redirect('/dashboard/settings/billing?error=already_subscribed');
+  }
 
   const customerEmail = user.email?.trim();
   if (!customerEmail) {

@@ -7,8 +7,7 @@ import {
   upgradeSubscription,
   pauseSubscription,
 } from '@/lib/creem/client';
-import { redirect } from 'next/navigation';
-import { revalidatePath } from 'next/cache';
+import { refresh, revalidatePath } from 'next/cache';
 import type { Subscription } from '../types';
 
 function mapRow(row: Record<string, unknown>): Subscription {
@@ -58,9 +57,7 @@ export async function getUserSubscription(): Promise<Subscription | null> {
   return mapRow(data as Record<string, unknown>);
 }
 
-export async function cancelUserSubscription(
-  mode: 'scheduled' | 'immediate',
-): Promise<{ error?: string }> {
+export async function cancelUserSubscription(): Promise<{ error?: string }> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -72,19 +69,13 @@ export async function cancelUserSubscription(
   if (!sub?.creem_subscription_id) return { error: 'No active subscription' };
 
   try {
-    await cancelSubscription(sub.creem_subscription_id, mode);
-    if (mode === 'scheduled') {
-      await supabase
-        .from('subscriptions')
-        .update({ cancel_at_period_end: true })
-        .eq('creem_subscription_id', sub.creem_subscription_id);
-    } else {
-      await supabase
-        .from('subscriptions')
-        .update({ status: 'canceled' })
-        .eq('creem_subscription_id', sub.creem_subscription_id);
-    }
-    revalidatePath('/dashboard/settings/billing');
+    await cancelSubscription(sub.creem_subscription_id, 'scheduled');
+    await supabase
+      .from('subscriptions')
+      .update({ cancel_at_period_end: true })
+      .eq('creem_subscription_id', sub.creem_subscription_id);
+    revalidatePath('/dashboard', 'layout');
+    refresh();
     return {};
   } catch (e) {
     return { error: (e as Error).message };
@@ -108,32 +99,39 @@ export async function resumeUserSubscription(): Promise<{ error?: string }> {
       .from('subscriptions')
       .update({ cancel_at_period_end: false, status: 'active' })
       .eq('creem_subscription_id', sub.creem_subscription_id);
-    revalidatePath('/dashboard/settings/billing');
+    revalidatePath('/dashboard', 'layout');
+    refresh();
     return {};
   } catch (e) {
     return { error: (e as Error).message };
   }
 }
 
-export async function upgradeUserSubscription(newProductId: string): Promise<void> {
+export async function upgradeUserSubscription(
+  newProductId: string,
+): Promise<{ error?: string }> {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) redirect('/login');
+  if (!user) return { error: 'Not authenticated' };
 
   const sub = await getLatestActiveSubscription(user.id);
-  if (!sub?.creem_subscription_id) redirect('/dashboard/settings/billing');
+  if (!sub?.creem_subscription_id) return { error: 'No active subscription' };
 
   try {
     await upgradeSubscription(sub.creem_subscription_id, newProductId);
+    await supabase
+      .from('subscriptions')
+      .update({ plan_id: newProductId, status: 'active', cancel_at_period_end: false })
+      .eq('creem_subscription_id', sub.creem_subscription_id);
+    revalidatePath('/dashboard', 'layout');
+    refresh();
+    return {};
   } catch (e) {
-    const message = e instanceof Error ? e.message : 'Unable to upgrade subscription';
-    redirect(`/dashboard/settings/billing?error=${encodeURIComponent(message)}`);
+    return { error: e instanceof Error ? e.message : 'Unable to upgrade subscription' };
   }
-
-  redirect('/dashboard/settings/billing?upgraded=1');
 }
 
 export async function pauseUserSubscription(): Promise<{ error?: string }> {
@@ -153,6 +151,8 @@ export async function pauseUserSubscription(): Promise<{ error?: string }> {
       .from('subscriptions')
       .update({ status: 'paused' })
       .eq('creem_subscription_id', sub.creem_subscription_id);
+    revalidatePath('/dashboard', 'layout');
+    refresh();
     return {};
   } catch (e) {
     return { error: (e as Error).message };

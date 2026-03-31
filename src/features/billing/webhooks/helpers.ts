@@ -2,13 +2,10 @@ import { PLANS } from '@/features/billing/types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { SubscriptionStatus } from '@/features/billing/types';
 
-const ONE_TIME_CREDITS_PURCHASE_AMOUNT = 500;
-
 export function creditsForProductId(productId: string): number {
+  if (productId === process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_STARTER) return PLANS.starter.credits;
   if (productId === process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_PRO) return PLANS.pro.credits;
   if (productId === process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_BUSINESS) return -1; // unlimited
-  if (productId === process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_CREDITS)
-    return ONE_TIME_CREDITS_PURCHASE_AMOUNT;
   console.warn(`creditsForProductId: unknown product_id "${productId}" — no credits granted`);
   return 0;
 }

@@ -9,6 +9,11 @@ vi.mock('@/lib/supabase/admin', () => ({
   createAdminClient: vi.fn(),
 }));
 
+vi.mock('next/cache', () => ({
+  refresh: vi.fn(),
+  revalidatePath: vi.fn(),
+}));
+
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { spendCredits } from '../credits';

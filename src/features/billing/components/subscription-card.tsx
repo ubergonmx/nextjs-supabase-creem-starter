@@ -1,7 +1,8 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { openCustomerPortal } from '@/features/billing/actions/portal';
+import { SubscriptionActions } from './subscription-actions';
+import { planNameFromId } from '@/features/billing/types';
 import type { Subscription } from '@/features/billing/types';
 import { PLANS } from '@/features/billing/types';
 import Link from 'next/link';
@@ -27,11 +28,16 @@ function statusVariant(
   }
 }
 
-function planNameFromId(planId: string | null): string {
-  if (!planId) return 'Free';
-  if (planId === process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_PRO) return 'Pro';
-  if (planId === process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_BUSINESS) return 'Business';
-  return 'Pro';
+function formatStatus(status: Subscription['status']): string {
+  const labels: Record<Subscription['status'], string> = {
+    active: 'Active',
+    trialing: 'Trialing',
+    canceled: 'Canceled',
+    past_due: 'Past Due',
+    incomplete: 'Incomplete',
+    paused: 'Paused',
+  };
+  return labels[status] ?? status;
 }
 
 function formatDate(dateStr: string | null): string {
@@ -47,7 +53,10 @@ export function SubscriptionCard({ subscription, creditsBalance }: Props) {
   const isActive =
     subscription && (subscription.status === 'active' || subscription.status === 'trialing');
 
-  const planName = subscription ? planNameFromId(subscription.planId) : 'Free';
+  const isUnlimited =
+    isActive && subscription?.planId === process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_BUSINESS;
+
+  const planName = planNameFromId(isActive ? (subscription?.planId ?? null) : null);
 
   return (
     <div className="grid gap-4 sm:grid-cols-2">
@@ -57,9 +66,11 @@ export function SubscriptionCard({ subscription, creditsBalance }: Props) {
           <div className="flex items-center justify-between">
             <CardTitle className="text-base">Subscription</CardTitle>
             {subscription ? (
-              <Badge variant={statusVariant(subscription.status)}>{subscription.status}</Badge>
+              <Badge variant={statusVariant(subscription.status)}>
+                {formatStatus(subscription.status)}
+              </Badge>
             ) : (
-              <Badge variant="secondary">free</Badge>
+              <Badge variant="secondary">{planName}</Badge>
             )}
           </div>
           <CardDescription>{planName} plan</CardDescription>
@@ -70,34 +81,28 @@ export function SubscriptionCard({ subscription, creditsBalance }: Props) {
               <p>
                 Current period:{' '}
                 <span className="text-foreground">
-                  {formatDate(subscription.currentPeriodStart)} →{' '}
+                  {formatDate(subscription.currentPeriodStart)} &rarr;{' '}
                   {formatDate(subscription.currentPeriodEnd)}
                 </span>
               </p>
               {subscription.cancelAtPeriodEnd && (
                 <p className="rounded-md bg-yellow-50 px-3 py-1.5 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400">
-                  ⚠ Cancels at end of current period
+                  &#9888; Cancels at end of current period
                 </p>
               )}
             </div>
           )}
-          <div className="flex flex-wrap gap-2">
-            {isActive ? (
-              <form action={openCustomerPortal}>
-                <Button size="sm" variant="outline" type="submit">
-                  Manage Subscription
+          {subscription ? (
+            <SubscriptionActions subscription={subscription} />
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {PLANS.pro.productId && (
+                <Button size="sm" render={<Link href="/pricing" />} nativeButton={false}>
+                  Upgrade to Pro
                 </Button>
-              </form>
-            ) : (
-              <>
-                {PLANS.pro.productId && (
-                  <Button size="sm" render={<Link href="/pricing" />} nativeButton={false}>
-                    Upgrade to Pro
-                  </Button>
-                )}
-              </>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -109,14 +114,12 @@ export function SubscriptionCard({ subscription, creditsBalance }: Props) {
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-3xl font-bold">
-            {subscription?.planId === process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_BUSINESS
-              ? '∞'
-              : creditsBalance.toLocaleString()}
+            {isUnlimited ? '∞' : creditsBalance.toLocaleString()}
           </p>
           <Button
             size="sm"
             variant="outline"
-            render={<Link href="/dashboard/credits" />}
+            render={<Link href="/dashboard/settings/billing" />}
             nativeButton={false}
           >
             View details

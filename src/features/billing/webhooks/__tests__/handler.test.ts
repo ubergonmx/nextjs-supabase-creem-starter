@@ -54,9 +54,9 @@ const baseEvent = { webhookId: 'wh_test_123' };
 
 describe('webhookHandlers', () => {
   beforeEach(() => {
+    process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_STARTER = 'prod_starter';
     process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_PRO = 'prod_pro';
     process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_BUSINESS = 'prod_business';
-    process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_CREDITS = 'prod_credits';
   });
 
   it('onCheckoutCompleted — upserts subscription when subscription present', async () => {
@@ -152,20 +152,34 @@ describe('webhookHandlers', () => {
     expect(chain.update).not.toHaveBeenCalled();
   });
 
-  it('onSubscriptionCanceled — updates status to canceled', async () => {
+  it('onSubscriptionCanceled — immediate: sets status to canceled when no future period end', async () => {
     const chain = makeChain(null);
-    (chain.maybeSingle as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
-      data: null,
-      error: null,
-    });
+    (chain.insert as ReturnType<typeof vi.fn>).mockResolvedValueOnce({ data: null, error: null });
     vi.mocked(createAdminClient).mockReturnValue(chain as never);
 
     await webhookHandlers.onSubscriptionCanceled!({
       ...baseEvent,
       id: 'sub_1',
+      current_period_end_date: null,
     } as never);
 
-    expect(chain.update).toHaveBeenCalledWith({ status: 'canceled' });
+    expect(chain.update).toHaveBeenCalledWith({ status: 'canceled', cancel_at_period_end: false });
+  });
+
+  it('onSubscriptionCanceled — scheduled: sets cancel_at_period_end when period end is future', async () => {
+    const chain = makeChain(null);
+    (chain.insert as ReturnType<typeof vi.fn>).mockResolvedValueOnce({ data: null, error: null });
+    vi.mocked(createAdminClient).mockReturnValue(chain as never);
+
+    const futureDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+
+    await webhookHandlers.onSubscriptionCanceled!({
+      ...baseEvent,
+      id: 'sub_1',
+      current_period_end_date: futureDate,
+    } as never);
+
+    expect(chain.update).toHaveBeenCalledWith({ cancel_at_period_end: true });
   });
 
   it('onSubscriptionPaused — updates status to paused', async () => {
@@ -183,25 +197,91 @@ describe('webhookHandlers', () => {
 
     expect(chain.update).toHaveBeenCalledWith({ status: 'paused' });
   });
+
+  it('onSubscriptionPaid — adds credits for Starter plan', async () => {
+    const chain = makeChain(null);
+    (chain.insert as ReturnType<typeof vi.fn>).mockResolvedValueOnce({ data: null, error: null });
+    (chain.single as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      data: { user_id: 'user-123', plan_id: 'prod_starter' },
+      error: null,
+    });
+    (chain.rpc as ReturnType<typeof vi.fn>).mockResolvedValueOnce({ data: null, error: null });
+    vi.mocked(createAdminClient).mockReturnValue(chain as never);
+
+    await webhookHandlers.onSubscriptionPaid!({
+      ...baseEvent,
+      id: 'sub_1',
+      status: 'active',
+    } as never);
+
+    expect(chain.rpc).toHaveBeenCalledWith(
+      'add_credits',
+      expect.objectContaining({ p_user_id: 'user-123', p_type: 'topup' }),
+    );
+  });
+
+  it('onSubscriptionPaid — adds credits for Pro plan', async () => {
+    const chain = makeChain(null);
+    (chain.insert as ReturnType<typeof vi.fn>).mockResolvedValueOnce({ data: null, error: null });
+    (chain.single as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      data: { user_id: 'user-456', plan_id: 'prod_pro' },
+      error: null,
+    });
+    (chain.rpc as ReturnType<typeof vi.fn>).mockResolvedValueOnce({ data: null, error: null });
+    vi.mocked(createAdminClient).mockReturnValue(chain as never);
+
+    await webhookHandlers.onSubscriptionPaid!({
+      ...baseEvent,
+      id: 'sub_2',
+      status: 'active',
+    } as never);
+
+    expect(chain.rpc).toHaveBeenCalledWith(
+      'add_credits',
+      expect.objectContaining({ p_user_id: 'user-456', p_type: 'topup' }),
+    );
+  });
+
+  it('onSubscriptionPaid — skips add_credits for Business (unlimited)', async () => {
+    const chain = makeChain(null);
+    (chain.insert as ReturnType<typeof vi.fn>).mockResolvedValueOnce({ data: null, error: null });
+    (chain.single as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      data: { user_id: 'user-789', plan_id: 'prod_business' },
+      error: null,
+    });
+    vi.mocked(createAdminClient).mockReturnValue(chain as never);
+
+    await webhookHandlers.onSubscriptionPaid!({
+      ...baseEvent,
+      id: 'sub_3',
+      status: 'active',
+    } as never);
+
+    expect(chain.rpc).not.toHaveBeenCalled();
+  });
 });
 
 describe('creditsForProductId', () => {
   beforeEach(() => {
+    process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_STARTER = 'prod_starter';
     process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_PRO = 'prod_pro';
     process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_BUSINESS = 'prod_business';
-    process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_CREDITS = 'prod_credits';
+  });
+
+  it('returns starter credits for starter product', () => {
+    expect(creditsForProductId('prod_starter')).toBeGreaterThan(0);
   });
 
   it('returns pro credits for pro product', () => {
     expect(creditsForProductId('prod_pro')).toBeGreaterThan(0);
   });
 
-  it('returns -1 for business (unlimited)', () => {
-    expect(creditsForProductId('prod_business')).toBe(-1);
+  it('returns more credits for pro than starter', () => {
+    expect(creditsForProductId('prod_pro')).toBeGreaterThan(creditsForProductId('prod_starter'));
   });
 
-  it('returns 500 for one-time credits purchase', () => {
-    expect(creditsForProductId('prod_credits')).toBe(500);
+  it('returns -1 for business (unlimited)', () => {
+    expect(creditsForProductId('prod_business')).toBe(-1);
   });
 
   it('returns 0 and warns for unknown product', () => {

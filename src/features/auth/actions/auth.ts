@@ -9,7 +9,14 @@ import { loginSchema, signupSchema } from '../schema';
 
 function getAuthRedirectBaseUrl(headersList: Headers): string {
   const configuredAppUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
-  if (configuredAppUrl) {
+  const isProduction =
+    configuredAppUrl &&
+    !configuredAppUrl.includes('localhost') &&
+    !configuredAppUrl.includes('127.0.0.1');
+
+  // In production use the configured URL; in dev prefer incoming headers so
+  // tunnels like ngrok work without changing any env vars.
+  if (isProduction) {
     return configuredAppUrl.replace(/\/+$/, '');
   }
 
@@ -24,7 +31,7 @@ function getAuthRedirectBaseUrl(headersList: Headers): string {
     return `${proto}://${host}`;
   }
 
-  return 'http://localhost:3000';
+  return configuredAppUrl ?? 'http://localhost:3000';
 }
 
 export async function login(
@@ -80,6 +87,8 @@ export async function signup(
   const headersList = await headers();
   const baseUrl = getAuthRedirectBaseUrl(headersList);
 
+
+  console.log('Signup base URL', baseUrl);
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
     email: result.data.email,
@@ -105,6 +114,7 @@ export async function loginWithOAuth(provider: OAuthProvider): Promise<void> {
   const headersList = await headers();
   const baseUrl = getAuthRedirectBaseUrl(headersList);
 
+  console.log('Login with OAuth base URL', baseUrl);
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,

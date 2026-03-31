@@ -18,8 +18,10 @@ function getMetadataBase() {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? fallbackUrl;
 
   try {
+    console.log('Getting metadata base', appUrl);
     return new URL(appUrl);
   } catch {
+    console.log('Error getting metadata base', appUrl);
     return new URL(fallbackUrl);
   }
 }

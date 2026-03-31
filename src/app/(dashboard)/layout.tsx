@@ -28,7 +28,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
   if (!user) redirect('/login');
 
   const subscription = await getUserSubscription();
-  const planName = planNameFromId(subscription?.planId ?? null) as 'Free' | 'Pro' | 'Business';
+  const isActiveSub =
+    subscription?.status === 'active' || subscription?.status === 'trialing';
+  const planName = planNameFromId(isActiveSub ? (subscription?.planId ?? null) : null) as
+    | 'Free'
+    | 'Starter'
+    | 'Pro'
+    | 'Business';
 
   return (
     <SidebarProvider

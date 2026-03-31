@@ -18,10 +18,8 @@ import {
 } from '@/components/ui/sidebar';
 import {
   IconDashboard,
-  IconSettings,
   IconHelp,
   IconCreditCard,
-  IconCoins,
   IconCalendarWeek,
   IconMessageCircleUser,
 } from '@tabler/icons-react';
@@ -35,18 +33,8 @@ const navMain = [
   },
   {
     title: 'Billing',
-    url: '/dashboard/billing',
+    url: '/dashboard/settings/billing',
     icon: <IconCreditCard />,
-  },
-  {
-    title: 'Credits',
-    url: '/dashboard/credits',
-    icon: <IconCoins />,
-  },
-  {
-    title: 'Settings',
-    url: '/dashboard/settings',
-    icon: <IconSettings />,
   },
 ];
 
@@ -76,6 +64,7 @@ type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
     name: string;
     email: string;
     avatar: string;
+    planName: 'Free' | 'Starter' | 'Pro' | 'Business';
   };
 };
 

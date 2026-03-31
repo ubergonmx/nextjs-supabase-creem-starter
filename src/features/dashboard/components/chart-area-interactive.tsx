@@ -125,14 +125,14 @@ const chartData = [
 
 const chartConfig = {
   visitors: {
-    label: 'Visitors',
+    label: 'Credits',
   },
   desktop: {
-    label: 'Desktop',
+    label: 'Earned',
     color: 'var(--primary)',
   },
   mobile: {
-    label: 'Mobile',
+    label: 'Spent',
     color: 'var(--primary)',
   },
 } satisfies ChartConfig;
@@ -164,10 +164,10 @@ export function ChartAreaInteractive() {
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>Total Visitors</CardTitle>
+        <CardTitle>Credit Activity</CardTitle>
         <CardDescription>
-          <span className="hidden @[540px]/card:block">Total for the last 3 months</span>
-          <span className="@[540px]/card:hidden">Last 3 months</span>
+          <span className="hidden @[540px]/card:block">Credits earned &amp; spent over time</span>
+          <span className="@[540px]/card:hidden">Credits over time</span>
         </CardDescription>
         <CardAction>
           <ToggleGroup

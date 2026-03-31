@@ -1,13 +1,12 @@
 import type { Metadata } from 'next';
 import { ChartAreaInteractive } from '@/features/dashboard/components/chart-area-interactive';
-import { DataTable } from '@/features/dashboard/components/data-table';
 import { SectionCards } from '@/features/dashboard/components/section-cards';
 import { SiteHeader } from '@/features/dashboard/components/site-header';
 import { SubscriptionCard } from '@/features/billing/components/subscription-card';
 import { CheckoutSuccessToast } from '@/features/billing/components/checkout-success-toast';
 import { getUserSubscription } from '@/features/billing/actions/subscription';
-
-import data from './data.json';
+import { getCreditsBalance } from '@/features/credits/actions/credits';
+import { planNameFromId } from '@/features/billing/types';
 
 export const metadata: Metadata = {
   title: 'Overview',
@@ -19,10 +18,17 @@ export default async function Page({
 }: {
   searchParams: Promise<{ checkout?: string }>;
 }) {
-  const [{ checkout }, subscription] = await Promise.all([
+  const [{ checkout }, subscription, creditsBalance] = await Promise.all([
     searchParams,
     getUserSubscription(),
+    getCreditsBalance(),
   ]);
+
+  const isActive =
+    subscription?.status === 'active' || subscription?.status === 'trialing';
+  const isUnlimited =
+    isActive && subscription?.planId === process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_BUSINESS;
+  const planName = planNameFromId(isActive ? (subscription?.planId ?? null) : null);
 
   return (
     <>
@@ -34,11 +40,17 @@ export default async function Page({
             <div className="px-4 lg:px-6">
               <SubscriptionCard subscription={subscription} />
             </div>
-            <SectionCards />
+            <SectionCards
+              creditsBalance={creditsBalance}
+              isUnlimited={isUnlimited ?? false}
+              planName={planName}
+              isActive={isActive ?? false}
+              subscriptionStatus={subscription?.status ?? null}
+              nextRenewal={subscription?.currentPeriodEnd ?? null}
+            />
             <div className="px-4 lg:px-6">
               <ChartAreaInteractive />
             </div>
-            <DataTable data={data} />
           </div>
         </div>
       </div>

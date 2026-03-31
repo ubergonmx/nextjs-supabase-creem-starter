@@ -1,5 +1,8 @@
+// Template default: always use Creem test API unless explicitly overridden.
+const DEFAULT_CREEM_BASE_URL = 'https://test-api.creem.io';
+
 const CREEM_BASE_URL =
-  process.env.NODE_ENV === 'production' ? 'https://api.creem.io' : 'https://test-api.creem.io';
+  process.env.CREEM_API_BASE_URL?.trim().replace(/\/$/, '') || DEFAULT_CREEM_BASE_URL;
 
 // ---------- Types ----------
 export type CreemSubscription = {
@@ -22,6 +25,11 @@ async function creemFetch<T>(
     params?: Record<string, string>;
   },
 ): Promise<T> {
+  const apiKey = process.env.CREEM_API_KEY?.trim();
+  if (!apiKey) {
+    throw new Error('CREEM_API_KEY is not configured');
+  }
+
   const url = new URL(`${CREEM_BASE_URL}${path}`);
   if (options?.params) {
     for (const [key, value] of Object.entries(options.params)) {
@@ -33,7 +41,7 @@ async function creemFetch<T>(
     method: options?.method ?? 'GET',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': process.env.CREEM_API_KEY!,
+      'x-api-key': apiKey,
     },
     ...(options?.body ? { body: JSON.stringify(options.body) } : {}),
   });

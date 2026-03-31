@@ -243,6 +243,7 @@ cp .env.example .env.local
   - `002_subscriptions.sql`
   - `003_credits.sql`
   - `004_webhook_events.sql`
+  - `005_security_hardening.sql
 - If you prefer using the Supabase CLI, run `supabase db push`
 
 4. Setting up auth providers and redirect URL:
@@ -268,7 +269,11 @@ cp .env.example .env.local
 2. Enable **Test Mode** in the bottom-left of the sidebar
 3. Go to **Developers > API & Webhooks** in the left sidebar
 4. On the **API Keys** tab, click **+ Create API Key**, name it anything (e.g. `creemkit`), toggle **Full Access** on, click **Create Key**, and copy the key
-5. Create three subscription products — go to **Commerce > Products** in the left sidebar, click **Create Product**. For each product:
+5. Set the copied key in `.env.local`:
+
+- `CREEM_API_KEY=<your_test_api_key>`
+
+6. Create three subscription products — go to **Commerce > Products** in the left sidebar, click **Create Product**. For each product:
    - **Section 1 (Product Details)**: Enter the product name and description
    - **Section 2 (Payment Details)**: Click the **Subscription** tab, set Currency to **USD**, enter the price, set Subscription interval to **Monthly**, Tax category to **Software as a Service**
    - **Sections 3–6**: Skip (image, features, advanced options, and abandoned cart are all optional)
@@ -282,12 +287,13 @@ cp .env.example .env.local
    | Pro              | 19        |
    | Business         | 99        |
 
-6. After creating each product, copy its `prod_` ID (shown on the product detail page) into your `.env.local`
+7. After creating each product, copy its `prod_` ID (shown on the product detail page) into your `.env.local`
 
-7. (Optional) Override API environment:
+8. (Optional) Override API environment:
 
-- Template default (local + deployed): `https://test-api.creem.io`
-- To switch to live mode, set `CREEM_API_BASE_URL=https://api.creem.io`
+- Template default (local + deployed): `https://test-api.creem.io`.
+- You do **not** need to set `CREEM_API_BASE_URL` for template test-mode setup.
+- To switch to live mode later, set `CREEM_API_BASE_URL=https://api.creem.io`.
 - Test keys only work with `test-api.creem.io`; production keys only work with `api.creem.io`
 
 ### 4. Run locally
@@ -321,7 +327,11 @@ Everything should work except for checkouts, which require webhooks to be set up
    - **Framework Preset** should automatically detect **Next.js** — no need to change it
    - **Root Directory** can stay as `./`
    - Expand the **Environment Variables** section
-   - Enter each key-value pair from your `.env.local` file (key on the left, value on the right). You can skip `CREEM_WEBHOOK_SECRET` for now — this will be configured after the initial deployment
+
+- Enter each key-value pair from your `.env.local` file (key on the left, value on the right). You can skip `CREEM_WEBHOOK_SECRET` for now — this will be configured after the initial deployment
+- Make sure `CREEM_API_KEY` is included in Vercel environment variables (Production target)
+- For test-mode template usage, leave `CREEM_API_BASE_URL` empty (do not add it)
+
 6. Click **Deploy** and wait for the build to complete
 7. Once done, copy your production URL from the Vercel dashboard (e.g. `https://your-app.vercel.app`)
 

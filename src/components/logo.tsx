@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils';
 
 export const Logo = ({ className }: { className?: string }) => {
   return (
@@ -57,5 +57,5 @@ export const Logo = ({ className }: { className?: string }) => {
         </text>
       </svg>
     </div>
-  )
-}
+  );
+};

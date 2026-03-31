@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils';
 
 export const TailwindFull = ({ className, ...props }: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -17,4 +17,4 @@ export const TailwindFull = ({ className, ...props }: React.SVGProps<SVGSVGEleme
       style={{ fill: 'currentColor' }}
     />
   </svg>
-)
+);

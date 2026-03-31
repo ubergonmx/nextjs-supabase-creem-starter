@@ -1,13 +1,13 @@
-import { InfiniteSlider } from '@/components/ui/infinite-slider'
-import { ProgressiveBlur } from '@/components/ui/progressive-blur'
-import { CreemFull } from './svg/creem'
-import { BaseUI } from './svg/baseui'
-import { OXCFull } from './svg/oxc'
-import { ShadcnFull } from './svg/shadcn'
-import { NextjsFull } from './svg/nextjs'
-import { SupabaseFull } from './svg/supabase'
-import { TailwindFull } from './svg/tailwindfull'
-import { VercelFull } from './svg/vercel'
+import { InfiniteSlider } from '@/components/ui/infinite-slider';
+import { ProgressiveBlur } from '@/components/ui/progressive-blur';
+import { CreemFull } from './svg/creem';
+import { BaseUI } from './svg/baseui';
+import { OXCFull } from './svg/oxc';
+import { ShadcnFull } from './svg/shadcn';
+import { NextjsFull } from './svg/nextjs';
+import { SupabaseFull } from './svg/supabase';
+import { TailwindFull } from './svg/tailwindfull';
+import { VercelFull } from './svg/vercel';
 
 export function LogoBar() {
   return (
@@ -55,5 +55,5 @@ export function LogoBar() {
         </div>
       </div>
     </section>
-  )
+  );
 }

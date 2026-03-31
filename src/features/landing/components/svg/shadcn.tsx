@@ -40,4 +40,4 @@ export const ShadcnFull = (props: React.SVGProps<SVGSVGElement>) => (
       shadcn
     </text>
   </svg>
-)
+);

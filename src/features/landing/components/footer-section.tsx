@@ -1,5 +1,10 @@
-import { Logo } from '@/components/logo'
-import Link from 'next/link'
+'use client';
+
+import { Logo } from '@/components/logo';
+import Link from 'next/link';
+import { useTheme } from 'next-themes';
+import { IconSun, IconMoon, IconDeviceDesktop } from '@tabler/icons-react';
+import { cn } from '@/lib/utils';
 
 const links = [
   {
@@ -29,7 +34,7 @@ const links = [
       { label: 'Security', href: '#' },
     ],
   },
-]
+];
 
 const socials = [
   {
@@ -140,21 +145,50 @@ const socials = [
       </svg>
     ),
   },
-]
+];
 
 export function FooterSection() {
+  const { theme, setTheme } = useTheme();
+
   return (
     <footer className="border-t bg-muted/40 pt-16 pb-8">
       <div className="mx-auto max-w-5xl px-6">
         <div className="grid gap-12 md:grid-cols-[1fr_2fr]">
           {/* Brand */}
           <div className="space-y-4">
-            <Link href="/" aria-label="go home">
+            <Link href="/" aria-label="go home" transitionTypes={['same-layout']}>
               <Logo />
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
               A production-ready Next.js starter — ship your SaaS in days, not months.
             </p>
+            <div className="flex items-center gap-2.5 pt-1">
+              <span className="text-xs text-muted-foreground">Theme</span>
+              <div className="flex rounded-md border">
+                {(
+                  [
+                    { value: 'light', Icon: IconSun, label: 'Light' },
+                    { value: 'dark', Icon: IconMoon, label: 'Dark' },
+                    { value: 'system', Icon: IconDeviceDesktop, label: 'System' },
+                  ] as const
+                ).map(({ value, Icon, label }) => (
+                  <button
+                    key={value}
+                    type="button"
+                    title={label}
+                    onClick={() => setTheme(value)}
+                    className={cn(
+                      'flex h-7 w-7 items-center justify-center transition-colors first:rounded-l-sm last:rounded-r-sm',
+                      theme === value
+                        ? 'bg-muted text-foreground'
+                        : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground',
+                    )}
+                  >
+                    <Icon className="size-3.5" />
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Link columns */}
@@ -201,5 +235,5 @@ export function FooterSection() {
         </div>
       </div>
     </footer>
-  )
+  );
 }

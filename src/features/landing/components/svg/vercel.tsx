@@ -42,4 +42,4 @@ export const VercelFull = (props: React.SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
   </svg>
-)
+);

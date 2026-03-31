@@ -1,12 +1,12 @@
-'use client'
+'use client';
 
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '@/components/ui/accordion'
-import Link from 'next/link'
+} from '@/components/ui/accordion';
+import Link from 'next/link';
 
 export function FaqsSection() {
   const faqItems = [
@@ -38,9 +38,9 @@ export function FaqsSection() {
       id: 'item-5',
       question: 'How do I deploy this to production?',
       answer:
-        'Click the "Deploy with Vercel" button in the README, set your environment variables (Supabase and Creem keys), and you\'re live. The entire process takes under 5 minutes.',
+        'Click the "Deploy with Vercel" button in the README, set your environment variables (Supabase and Creem keys), create your products in Creem, and you\'re live. Plan for 15–30 minutes the first time.',
     },
-  ]
+  ];
 
   return (
     <section className="py-16 md:py-24">
@@ -83,5 +83,5 @@ export function FaqsSection() {
         </div>
       </div>
     </section>
-  )
+  );
 }

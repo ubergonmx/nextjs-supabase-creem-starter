@@ -1,10 +1,10 @@
-import Link from 'next/link'
-import { IconArrowRight } from '@tabler/icons-react'
-import { Button } from '@/components/ui/button'
-import Image from 'next/image'
-import { TextEffect } from '@/components/ui/text-effect'
-import { AnimatedGroup } from '@/components/ui/animated-group'
-import { LogoBar } from './logo-bar'
+import Link from 'next/link';
+import { IconArrowRight } from '@tabler/icons-react';
+import { Button } from '@/components/ui/button';
+import Image from 'next/image';
+import { TextEffect } from '@/components/ui/text-effect';
+import { AnimatedGroup } from '@/components/ui/animated-group';
+import { LogoBar } from './logo-bar';
 
 const transitionVariants = {
   item: {
@@ -24,7 +24,7 @@ const transitionVariants = {
       },
     },
   },
-}
+};
 
 export default function HeroSection() {
   return (
@@ -89,7 +89,7 @@ export default function HeroSection() {
                     size="lg"
                     variant="outline"
                     className="rounded-xl px-6 text-base"
-                    render={<Link href="/pricing" />}
+                    render={<Link href="/pricing" transitionTypes={['same-layout']} />}
                     nativeButton={false}
                   >
                     <span className="text-nowrap">View Pricing</span>
@@ -136,5 +136,5 @@ export default function HeroSection() {
         <LogoBar />
       </main>
     </>
-  )
+  );
 }

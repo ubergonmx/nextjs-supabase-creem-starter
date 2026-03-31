@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { AppSidebar } from '@/features/dashboard/components/app-sidebar';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { ProgressProvider } from '@/components/progress-provider';
 
 export const metadata: Metadata = {
   title: {
@@ -41,7 +42,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
           avatar: (user.user_metadata?.avatar_url as string) ?? '',
         }}
       />
-      <SidebarInset>{children}</SidebarInset>
+      <SidebarInset>
+        <ProgressProvider>{children}</ProgressProvider>
+      </SidebarInset>
     </SidebarProvider>
   );
 }

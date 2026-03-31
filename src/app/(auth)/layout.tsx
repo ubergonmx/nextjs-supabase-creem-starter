@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { ProgressProvider } from '@/components/progress-provider';
 
 export const metadata: Metadata = {
   title: {
@@ -13,5 +14,5 @@ export const metadata: Metadata = {
 };
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return <ProgressProvider>{children}</ProgressProvider>;
 }

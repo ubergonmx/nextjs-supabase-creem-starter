@@ -17,8 +17,8 @@ import {
 import {
   cancelUserSubscription,
   resumeUserSubscription,
-  openCustomerPortal,
-} from '@/features/billing/actions';
+} from '@/features/billing/actions/subscription';
+import { openCustomerPortal } from '@/features/billing/actions/portal';
 import type { Subscription } from '@/features/billing/types';
 import { toast } from 'sonner';
 

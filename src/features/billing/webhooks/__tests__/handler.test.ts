@@ -5,8 +5,14 @@ vi.mock('@/lib/supabase/admin', () => ({
   createAdminClient: vi.fn(),
 }));
 
+// Mock @creem_io/nextjs to avoid next/server ESM resolution issues in vitest
+vi.mock('@creem_io/nextjs', () => ({
+  Webhook: vi.fn(() => vi.fn()),
+}));
+
 import { createAdminClient } from '@/lib/supabase/admin';
-import { webhookHandlers, creditsForProductId, mapStatus } from '../index';
+import { webhookHandlers } from '../handler';
+import { creditsForProductId, mapStatus } from '../helpers';
 
 /** Creates a Supabase-like chainable mock where every method returns `this`,
  *  and the chain is also a Promise that resolves to { data, error: null }.

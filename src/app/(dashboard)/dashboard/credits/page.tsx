@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { SiteHeader } from '@/features/dashboard/components/site-header';
 import { CreditsBalanceCard } from '@/features/credits/components/credits-balance-card';
 import { TransactionHistory } from '@/features/credits/components/transaction-history';
-import { getCreditsBalance, getCreditTransactions } from '@/features/credits/actions';
+import { getCreditsBalance, getCreditTransactions } from '@/features/credits/actions/credits';
 
 export const metadata: Metadata = {
   title: 'Credits',

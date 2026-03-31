@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { createCheckoutSession } from '@/features/billing/actions';
+import { createCheckoutSession } from '@/features/billing/actions/checkout';
 import { useTransition } from 'react';
 
 export function CheckoutButton({

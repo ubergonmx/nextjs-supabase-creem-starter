@@ -1,1 +1,1 @@
-export { handleCreemWebhook as POST } from '@/features/billing/webhooks';
+export { handleCreemWebhook as POST } from '@/features/billing/webhooks/handler';

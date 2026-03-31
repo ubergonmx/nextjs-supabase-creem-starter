@@ -1,59 +1,15 @@
 import { Webhook } from '@creem_io/nextjs';
+import type {
+  FlatCheckoutCompleted,
+  FlatRefundCreated,
+  FlatSubscriptionEvent,
+} from '@creem_io/nextjs';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { PLANS } from '@/features/billing/types';
-import type { SupabaseClient } from '@supabase/supabase-js';
-import type { SubscriptionStatus } from '@/features/billing/types';
+import { creditsForProductId, mapStatus, isDuplicate } from './helpers';
 
-// ---------- Helpers ----------
-
-const ONE_TIME_CREDITS_PURCHASE_AMOUNT = 500;
-
-export function creditsForProductId(productId: string): number {
-  if (productId === process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_PRO) return PLANS.pro.credits;
-  if (productId === process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_BUSINESS) return -1; // unlimited
-  if (productId === process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_CREDITS)
-    return ONE_TIME_CREDITS_PURCHASE_AMOUNT;
-  console.warn(`creditsForProductId: unknown product_id "${productId}" — no credits granted`);
-  return 0;
-}
-
-export function mapStatus(raw: string): SubscriptionStatus {
-  const map: Record<string, SubscriptionStatus> = {
-    active: 'active',
-    trialing: 'trialing',
-    canceled: 'canceled',
-    cancelled: 'canceled',
-    past_due: 'past_due',
-    paused: 'paused',
-  };
-  return map[raw] ?? 'incomplete';
-}
-
-/** Inserts a webhook_events row for idempotency. Returns true if already processed. */
-export async function isDuplicate(
-  admin: SupabaseClient,
-  webhookId: string,
-  eventType: string,
-): Promise<boolean> {
-  const { error } = await admin
-    .from('webhook_events')
-    .insert({ id: webhookId, event_type: eventType });
-
-  if (!error) return false;
-
-  // Duplicate webhook id means this event was already processed.
-  if (error.code === '23505') return true;
-
-  throw new Error(`webhook_events idempotency insert failed: ${error.message}`);
-}
-
-// ---------- Route handler ----------
-
-const admin = createAdminClient();
-
-export const handleCreemWebhook = Webhook({
-  webhookSecret: process.env.CREEM_WEBHOOK_SECRET ?? '',
-  onCheckoutCompleted: async (event) => {
+export const webhookHandlers = {
+  onCheckoutCompleted: async (event: FlatCheckoutCompleted) => {
+    const admin = createAdminClient();
     if (await isDuplicate(admin, event.webhookId, 'checkout.completed')) return;
 
     const userId = (event.metadata as Record<string, string> | undefined)?.user_id;
@@ -94,7 +50,6 @@ export const handleCreemWebhook = Webhook({
       );
       if (upsertError) throw new Error(`subscriptions upsert failed: ${upsertError.message}`);
     } else {
-      // One-time credit purchase
       const credits = creditsForProductId(event.product.id);
       if (credits > 0) {
         const { error } = await admin.rpc('add_credits', {
@@ -108,7 +63,8 @@ export const handleCreemWebhook = Webhook({
     }
   },
 
-  onSubscriptionActive: async (event) => {
+  onSubscriptionActive: async (event: FlatSubscriptionEvent<'subscription.active'>) => {
+    const admin = createAdminClient();
     if (await isDuplicate(admin, event.webhookId, 'subscription.active')) return;
     await admin
       .from('subscriptions')
@@ -121,7 +77,8 @@ export const handleCreemWebhook = Webhook({
       .eq('creem_subscription_id', event.id);
   },
 
-  onSubscriptionPaid: async (event) => {
+  onSubscriptionPaid: async (event: FlatSubscriptionEvent<'subscription.paid'>) => {
+    const admin = createAdminClient();
     if (await isDuplicate(admin, event.webhookId, 'subscription.paid')) return;
 
     await admin
@@ -134,7 +91,6 @@ export const handleCreemWebhook = Webhook({
       })
       .eq('creem_subscription_id', event.id);
 
-    // Top up credits on each billing cycle
     const { data: sub } = await admin
       .from('subscriptions')
       .select('user_id, plan_id')
@@ -155,7 +111,8 @@ export const handleCreemWebhook = Webhook({
     }
   },
 
-  onSubscriptionTrialing: async (event) => {
+  onSubscriptionTrialing: async (event: FlatSubscriptionEvent<'subscription.trialing'>) => {
+    const admin = createAdminClient();
     if (await isDuplicate(admin, event.webhookId, 'subscription.trialing')) return;
     await admin
       .from('subscriptions')
@@ -168,7 +125,8 @@ export const handleCreemWebhook = Webhook({
       .eq('creem_subscription_id', event.id);
   },
 
-  onSubscriptionCanceled: async (event) => {
+  onSubscriptionCanceled: async (event: FlatSubscriptionEvent<'subscription.canceled'>) => {
+    const admin = createAdminClient();
     if (await isDuplicate(admin, event.webhookId, 'subscription.canceled')) return;
     await admin
       .from('subscriptions')
@@ -176,7 +134,8 @@ export const handleCreemWebhook = Webhook({
       .eq('creem_subscription_id', event.id);
   },
 
-  onSubscriptionExpired: async (event) => {
+  onSubscriptionExpired: async (event: FlatSubscriptionEvent<'subscription.expired'>) => {
+    const admin = createAdminClient();
     if (await isDuplicate(admin, event.webhookId, 'subscription.expired')) return;
     await admin
       .from('subscriptions')
@@ -184,7 +143,8 @@ export const handleCreemWebhook = Webhook({
       .eq('creem_subscription_id', event.id);
   },
 
-  onSubscriptionPaused: async (event) => {
+  onSubscriptionPaused: async (event: FlatSubscriptionEvent<'subscription.paused'>) => {
+    const admin = createAdminClient();
     if (await isDuplicate(admin, event.webhookId, 'subscription.paused')) return;
     await admin
       .from('subscriptions')
@@ -192,7 +152,8 @@ export const handleCreemWebhook = Webhook({
       .eq('creem_subscription_id', event.id);
   },
 
-  onSubscriptionUpdate: async (event) => {
+  onSubscriptionUpdate: async (event: FlatSubscriptionEvent<'subscription.update'>) => {
+    const admin = createAdminClient();
     if (await isDuplicate(admin, event.webhookId, 'subscription.update')) return;
     const productId =
       typeof event.product === 'string' ? event.product : (event.product as { id: string }).id;
@@ -208,7 +169,8 @@ export const handleCreemWebhook = Webhook({
       .eq('creem_subscription_id', event.id);
   },
 
-  onRefundCreated: async (event) => {
+  onRefundCreated: async (event: FlatRefundCreated) => {
+    const admin = createAdminClient();
     if (await isDuplicate(admin, event.webhookId, 'refund.created')) return;
 
     const subscriptionId =
@@ -236,4 +198,9 @@ export const handleCreemWebhook = Webhook({
       if (error) throw new Error(`deduct_credits RPC failed: ${error.message}`);
     }
   },
+};
+
+export const handleCreemWebhook = Webhook({
+  webhookSecret: process.env.CREEM_WEBHOOK_SECRET ?? '',
+  ...webhookHandlers,
 });

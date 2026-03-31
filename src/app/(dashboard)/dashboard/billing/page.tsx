@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import { SiteHeader } from '@/features/dashboard/components/site-header';
-import { getUserSubscription } from '@/features/billing/actions';
+import { getUserSubscription } from '@/features/billing/actions/subscription';
 import { SubscriptionCard } from '@/features/billing/components/subscription-card';
 import { ManageSubscription } from '@/features/billing/components/manage-subscription';
-import { getCreditsBalance } from '@/features/credits/actions';
+import { getCreditsBalance } from '@/features/credits/actions/credits';
 import { PLANS } from '@/features/billing/types';
 import { CheckoutButton } from '@/features/billing/components/checkout-button';
 import { UpgradeButton } from '@/features/billing/components/upgrade-button';

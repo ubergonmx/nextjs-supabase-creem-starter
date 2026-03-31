@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
 import { GitHub, Google } from './provider-icons';
-import { login, loginWithOAuth } from '@/features/auth/actions';
+import { login, loginWithOAuth } from '@/features/auth/actions/auth';
 
 export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) {
   const [state, action, pending] = useActionState(login, undefined);

@@ -27,8 +27,6 @@ function getAuthRedirectBaseUrl(headersList: Headers): string {
   return 'http://localhost:3000';
 }
 
-// -- Actions --
-
 export async function login(
   _prevState: AuthActionState,
   formData: FormData,

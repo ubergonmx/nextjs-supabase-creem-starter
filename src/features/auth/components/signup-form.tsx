@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
-import { signup } from '@/features/auth/actions';
+import { signup } from '@/features/auth/actions/auth';
 
 export function SignupForm({ className, ...props }: React.ComponentProps<'div'>) {
   const [state, action, pending] = useActionState(signup, undefined);

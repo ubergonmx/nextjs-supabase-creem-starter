@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { upgradeUserSubscription } from '@/features/billing/actions';
+import { upgradeUserSubscription } from '@/features/billing/actions/subscription';
 import { useTransition } from 'react';
 
 export function UpgradeButton({

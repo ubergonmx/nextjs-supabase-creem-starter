@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { purchaseCredits } from '@/features/credits/actions';
+import { purchaseCredits } from '@/features/credits/actions/credits';
 
 export function CreditsBalanceCard({ balance }: { balance: number }) {
   return (

@@ -23,7 +23,7 @@ import {
   IconCoins,
   IconLogout,
 } from '@tabler/icons-react';
-import { logout } from '@/features/auth/actions';
+import { logout } from '@/features/auth/actions/auth';
 import Link from 'next/link';
 
 export function NavUser({

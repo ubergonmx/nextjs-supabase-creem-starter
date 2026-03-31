@@ -5,8 +5,8 @@ import { SectionCards } from '@/features/dashboard/components/section-cards';
 import { SiteHeader } from '@/features/dashboard/components/site-header';
 import { SubscriptionCard } from '@/features/billing/components/subscription-card';
 import { CheckoutSuccessToast } from '@/features/billing/components/checkout-success-toast';
-import { getUserSubscription } from '@/features/billing/actions';
-import { getCreditsBalance } from '@/features/credits/actions';
+import { getUserSubscription } from '@/features/billing/actions/subscription';
+import { getCreditsBalance } from '@/features/credits/actions/credits';
 
 import data from './data.json';
 

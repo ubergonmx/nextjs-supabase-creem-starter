@@ -11,7 +11,7 @@ vi.mock('@/lib/supabase/admin', () => ({
 
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { spendCredits } from '../index';
+import { spendCredits } from '../credits';
 
 describe('spendCredits', () => {
   const mockUser = { id: 'user-123', email: 'test@example.com' };

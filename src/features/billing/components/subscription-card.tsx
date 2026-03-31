@@ -1,7 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { openCustomerPortal } from '@/features/billing/actions';
+import { openCustomerPortal } from '@/features/billing/actions/portal';
 import type { Subscription } from '@/features/billing/types';
 import { PLANS } from '@/features/billing/types';
 import Link from 'next/link';

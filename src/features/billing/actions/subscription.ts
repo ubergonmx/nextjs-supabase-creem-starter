@@ -2,8 +2,6 @@
 
 import { createClient } from '@/lib/supabase/server';
 import {
-  createCheckout,
-  getCustomerPortalLink,
   cancelSubscription,
   resumeSubscription,
   upgradeSubscription,
@@ -11,12 +9,8 @@ import {
 } from '@/lib/creem/client';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import { PLANS, type Subscription } from '../types';
-import { createCheckoutSchema } from '../schema';
+import type { Subscription } from '../types';
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
-
-// ---------- Helpers ----------
 function mapRow(row: Record<string, unknown>): Subscription {
   return {
     id: row.id as string,
@@ -31,55 +25,19 @@ function mapRow(row: Record<string, unknown>): Subscription {
   };
 }
 
-// ---------- Checkout ----------
-export async function createCheckoutSession(productId: string): Promise<void> {
-  const normalizedProductId = productId.trim();
-
-  if (!createCheckoutSchema.safeParse({ productId: normalizedProductId }).success) {
-    redirect('/pricing?error=product_not_configured');
-  }
-
-  const allowedProductIds = new Set(
-    [PLANS.pro.productId, PLANS.business.productId].filter(
-      (id): id is string => typeof id === 'string' && id.length > 0,
-    ),
-  );
-
-  if (!allowedProductIds.has(normalizedProductId)) {
-    redirect('/pricing?error=product_not_configured');
-  }
-
+async function getLatestActiveSubscription(userId: string) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) redirect('/login');
-
-  const customerEmail = user.email?.trim();
-  if (!customerEmail) {
-    redirect('/pricing?error=missing_email');
-  }
-
-  let checkoutUrl: string;
-  try {
-    const result = await createCheckout({
-      productId: normalizedProductId,
-      successUrl: `${APP_URL}/dashboard?checkout=success`,
-      customerEmail,
-      metadata: { user_id: user.id },
-    });
-    checkoutUrl = result.checkout_url;
-  } catch (e) {
-    const message = e instanceof Error ? e.message : 'Checkout unavailable';
-    console.error('createCheckoutSession failed: ', message);
-    redirect('/pricing?error=checkout_unavailable');
-  }
-
-  redirect(checkoutUrl);
+  const { data } = await supabase
+    .from('subscriptions')
+    .select('creem_subscription_id')
+    .eq('user_id', userId)
+    .not('status', 'eq', 'canceled')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return data;
 }
 
-// ---------- Subscription queries ----------
 export async function getUserSubscription(): Promise<Subscription | null> {
   const supabase = await createClient();
   const {
@@ -100,38 +58,6 @@ export async function getUserSubscription(): Promise<Subscription | null> {
   return mapRow(data as Record<string, unknown>);
 }
 
-// ---------- Customer Portal ----------
-export async function openCustomerPortal(): Promise<void> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) redirect('/login');
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('creem_customer_id')
-    .eq('id', user.id)
-    .single();
-
-  if (!profile?.creem_customer_id) {
-    redirect('/dashboard/billing?error=no_customer');
-  }
-
-  let portalUrl: string;
-  try {
-    const result = await getCustomerPortalLink(profile.creem_customer_id);
-    portalUrl = result.customer_portal_link;
-  } catch (e) {
-    const message = e instanceof Error ? e.message : 'Portal unavailable';
-    redirect(`/dashboard/billing?error=${encodeURIComponent(message)}`);
-  }
-
-  redirect(portalUrl);
-}
-
-// ---------- Cancel ----------
 export async function cancelUserSubscription(
   mode: 'scheduled' | 'immediate',
 ): Promise<{ error?: string }> {
@@ -142,15 +68,7 @@ export async function cancelUserSubscription(
 
   if (!user) return { error: 'Not authenticated' };
 
-  const { data: sub } = await supabase
-    .from('subscriptions')
-    .select('creem_subscription_id')
-    .eq('user_id', user.id)
-    .not('status', 'eq', 'canceled')
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
+  const sub = await getLatestActiveSubscription(user.id);
   if (!sub?.creem_subscription_id) return { error: 'No active subscription' };
 
   try {
@@ -173,7 +91,6 @@ export async function cancelUserSubscription(
   }
 }
 
-// ---------- Resume ----------
 export async function resumeUserSubscription(): Promise<{ error?: string }> {
   const supabase = await createClient();
   const {
@@ -182,15 +99,7 @@ export async function resumeUserSubscription(): Promise<{ error?: string }> {
 
   if (!user) return { error: 'Not authenticated' };
 
-  const { data: sub } = await supabase
-    .from('subscriptions')
-    .select('creem_subscription_id')
-    .eq('user_id', user.id)
-    .not('status', 'eq', 'canceled')
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
+  const sub = await getLatestActiveSubscription(user.id);
   if (!sub?.creem_subscription_id) return { error: 'No active subscription' };
 
   try {
@@ -206,7 +115,6 @@ export async function resumeUserSubscription(): Promise<{ error?: string }> {
   }
 }
 
-// ---------- Upgrade ----------
 export async function upgradeUserSubscription(newProductId: string): Promise<void> {
   const supabase = await createClient();
   const {
@@ -215,15 +123,7 @@ export async function upgradeUserSubscription(newProductId: string): Promise<voi
 
   if (!user) redirect('/login');
 
-  const { data: sub } = await supabase
-    .from('subscriptions')
-    .select('creem_subscription_id')
-    .eq('user_id', user.id)
-    .not('status', 'eq', 'canceled')
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
+  const sub = await getLatestActiveSubscription(user.id);
   if (!sub?.creem_subscription_id) redirect('/dashboard/billing');
 
   try {
@@ -233,11 +133,9 @@ export async function upgradeUserSubscription(newProductId: string): Promise<voi
     redirect(`/dashboard/billing?error=${encodeURIComponent(message)}`);
   }
 
-  // Actual status change comes back via webhook
   redirect('/dashboard/billing?upgraded=1');
 }
 
-// ---------- Pause ----------
 export async function pauseUserSubscription(): Promise<{ error?: string }> {
   const supabase = await createClient();
   const {
@@ -246,15 +144,7 @@ export async function pauseUserSubscription(): Promise<{ error?: string }> {
 
   if (!user) return { error: 'Not authenticated' };
 
-  const { data: sub } = await supabase
-    .from('subscriptions')
-    .select('creem_subscription_id')
-    .eq('user_id', user.id)
-    .not('status', 'eq', 'canceled')
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
+  const sub = await getLatestActiveSubscription(user.id);
   if (!sub?.creem_subscription_id) return { error: 'No active subscription' };
 
   try {

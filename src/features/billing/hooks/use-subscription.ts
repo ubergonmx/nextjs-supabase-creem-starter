@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { getUserSubscription } from '@/features/billing/actions';
+import { getUserSubscription } from '@/features/billing/actions/subscription';
 import type { Subscription } from '@/features/billing/types';
 
 export function useSubscription() {

@@ -78,7 +78,7 @@ export default function HeroSection() {
                     key={1}
                     size="lg"
                     className="rounded-xl px-6 text-base shadow-lg shadow-primary/20"
-                    render={<Link href="/login" />}
+                    render={<Link href="/login" transitionTypes={['cross-layout']} />}
                     nativeButton={false}
                   >
                     <span className="text-nowrap">Start Building</span>

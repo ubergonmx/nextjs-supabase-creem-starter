@@ -139,3 +139,9 @@ body {
 ::view-transition-new(site-header) {
   animation: none;
 }
+
+/* Suppress transition entirely for cross-layout navigations (e.g. marketing → dashboard/auth) */
+html:active-view-transition-type(cross-layout) ::view-transition-old(root),
+html:active-view-transition-type(cross-layout) ::view-transition-new(root) {
+  animation: none;
+}

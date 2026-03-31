@@ -14,7 +14,7 @@ export function CallToAction() {
           </p>
 
           <div className="mt-12 flex flex-wrap justify-center gap-4">
-            <Button size="lg" render={<Link href="/login" />} nativeButton={false}>
+            <Button size="lg" render={<Link href="/login" transitionTypes={['cross-layout']} />} nativeButton={false}>
               <span>Get Started</span>
             </Button>
 

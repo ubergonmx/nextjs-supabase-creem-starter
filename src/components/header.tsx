@@ -72,7 +72,7 @@ export const Header = () => {
               {!loading && (
                 <>
                   {user ? (
-                    <Button size="default" render={<Link href="/dashboard" />} nativeButton={false}>
+                    <Button size="default" render={<Link href="/dashboard" transitionTypes={['cross-layout']} />} nativeButton={false}>
                       <span>Dashboard</span>
                     </Button>
                   ) : (
@@ -80,12 +80,12 @@ export const Header = () => {
                       <Button
                         variant="outline"
                         size="default"
-                        render={<Link href="/login" />}
+                        render={<Link href="/login" transitionTypes={['cross-layout']} />}
                         nativeButton={false}
                       >
                         <span>Login</span>
                       </Button>
-                      <Button size="default" render={<Link href="/signup" />} nativeButton={false}>
+                      <Button size="default" render={<Link href="/signup" transitionTypes={['cross-layout']} />} nativeButton={false}>
                         <span>Sign Up</span>
                       </Button>
                     </>
@@ -164,7 +164,7 @@ export const Header = () => {
                       {user ? (
                         <Button
                           className="w-full"
-                          render={<Link href="/dashboard" onClick={close} />}
+                          render={<Link href="/dashboard" onClick={close} transitionTypes={['cross-layout']} />}
                           nativeButton={false}
                         >
                           Dashboard
@@ -174,14 +174,14 @@ export const Header = () => {
                           <Button
                             variant="outline"
                             className="w-full"
-                            render={<Link href="/login" onClick={close} />}
+                            render={<Link href="/login" onClick={close} transitionTypes={['cross-layout']} />}
                             nativeButton={false}
                           >
                             Login
                           </Button>
                           <Button
                             className="w-full"
-                            render={<Link href="/signup" onClick={close} />}
+                            render={<Link href="/signup" onClick={close} transitionTypes={['cross-layout']} />}
                             nativeButton={false}
                           >
                             Sign Up

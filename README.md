@@ -1,12 +1,9 @@
-<!-- Banner slot (add your image when ready) -->
-<!--
-![CreemKit Banner](./public/landing/banner.png)
--->
+![CreemKit Header](./src/app/opengraph-image.png)
 
 # CreemKit - Next.js + Supabase + Creem Starter
 
 [![CI](https://github.com/ubergonmx/creemkit/actions/workflows/ci.yml/badge.svg)](https://github.com/ubergonmx/creemkit/actions/workflows/ci.yml)
-![Status](https://img.shields.io/badge/status-work--in--progress-yellow)
+![Status](https://img.shields.io/badge/status-ready-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 The most comprehensive, production-ready Next.js starter with Supabase auth and Creem payments pre-integrated.
@@ -75,22 +72,42 @@ Open [http://localhost:3000](http://localhost:3000).
 - **Payments** — [Creem](https://creem.io)
 - **Styling** — [Tailwind CSS](https://tailwindcss.com)
 - **UI Components** — [shadcn/ui](https://ui.shadcn.com) (Base UI)
-- **Icons** - [Tabler icons](https://tabler.io/icons)
+- **Icons** — [Tabler Icons](https://tabler.io/icons)
+- **Linter / Formatter** — [OXC](https://oxc.rs) (Oxlint + Oxfmt)
 - **Language** — TypeScript (strict mode)
-- **Deployment** - [Vercel](https://vercel.com)
+- **Deployment** — [Vercel](https://vercel.com)
 
 ### Features
 
-- Next.js 16 App Router + Server Components foundation
-- Supabase auth (email/password + Google + GitHub OAuth)
-- Route protection using Next.js `proxy.ts` middleware pattern
+**Auth**
+
+- Supabase auth — email/password + Google + GitHub OAuth
+- Route protection via Next.js `proxy.ts` middleware pattern
+
+**Payments & Billing**
+
 - Creem checkout flow for Starter / Pro / Business plans
-- Subscription management: upgrade, downgrade, cancel at period end, resume
+- Subscription management — upgrade, downgrade, cancel at period end, resume, pause
 - Creem customer portal access for self-service billing
-- Credits wallet system with transaction history
+- Full Creem webhook coverage with signature verification and idempotency
+
+**Credits**
+
+- Credits wallet with real-time balance and sortable transaction history (TanStack Table)
 - Atomic credit operations via Postgres RPCs (`spend_credits`, `add_credits`, `deduct_credits`)
-- Strict TypeScript, Oxlint, Oxfmt, and CI checks
-- Production-safe webhook processing with idempotency logging
+- Business plan users get unlimited credits — no deductions, no balance tracking
+
+**Example Features (replace with your own)**
+
+- **AI Summarizer** — credit-spending feature; Business users bypass deductions entirely
+- **Advanced Analytics** — plan-gated page with blur overlay and upgrade prompt for non-Pro users
+
+**DX & Quality**
+
+- Next.js 16 App Router + Server Components foundation
+- Strict TypeScript, OXC (Oxlint + Oxfmt), and CI checks on every push
+- Feature-based architecture — business logic in `src/features/`, thin App Router layer
+- Light / dark / system theme toggle on the marketing page (press `d` to toggle)
 
 ### Webhook Integrations
 

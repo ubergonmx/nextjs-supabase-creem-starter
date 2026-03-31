@@ -133,3 +133,9 @@ html,
 body {
   scroll-behavior: smooth;
 }
+
+/* Prevent the marketing header from cross-fading during view transitions */
+::view-transition-old(site-header),
+::view-transition-new(site-header) {
+  animation: none;
+}

@@ -4,6 +4,8 @@ import { redirect } from 'next/navigation';
 import { AppSidebar } from '@/features/dashboard/components/app-sidebar';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { ProgressProvider } from '@/components/progress-provider';
+import { getUserSubscription } from '@/features/billing/actions/subscription';
+import { planNameFromId } from '@/features/billing/types';
 
 export const metadata: Metadata = {
   title: {
@@ -25,6 +27,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   if (!user) redirect('/login');
 
+  const subscription = await getUserSubscription();
+  const planName = planNameFromId(subscription?.planId ?? null) as 'Free' | 'Pro' | 'Business';
+
   return (
     <SidebarProvider
       style={
@@ -40,6 +45,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           name: (user.user_metadata?.full_name as string) ?? user.email ?? '',
           email: user.email ?? '',
           avatar: (user.user_metadata?.avatar_url as string) ?? '',
+          planName,
         }}
       />
       <SidebarInset>

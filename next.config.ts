@@ -16,6 +16,9 @@ const isProd = process.env.NODE_ENV === 'production';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  experimental: {
+    viewTransition: true,
+  },
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
   typescript: {
     tsconfigPath: isProd ? 'tsconfig.build.json' : 'tsconfig.json',

@@ -41,7 +41,7 @@ export const Header = () => {
         )}
       </AnimatePresence>
 
-      <nav className="fixed z-20 w-full border-b bg-background/50 backdrop-blur-[20px] transition-colors duration-150">
+      <nav style={{ viewTransitionName: 'site-header' }} className="fixed z-20 w-full border-b bg-background/50 backdrop-blur-[20px] transition-colors duration-150">
         <div className="mx-auto max-w-5xl px-6 transition-all duration-300">
           <div className="flex items-center justify-between py-4 lg:py-5">
             {/* Logo + Desktop nav grouped left */}

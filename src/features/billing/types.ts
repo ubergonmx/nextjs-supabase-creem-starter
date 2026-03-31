@@ -31,6 +31,14 @@ export type Subscription = {
   cancelAtPeriodEnd: boolean;
 };
 
+// ---------- Plan helpers ----------
+export function planNameFromId(planId: string | null): string {
+  if (!planId) return 'Free';
+  if (planId === process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_PRO) return 'Pro';
+  if (planId === process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_BUSINESS) return 'Business';
+  return 'Pro';
+}
+
 // ---------- Plan config ----------
 export const PLANS = {
   free: { name: 'Free', price: 0, credits: 100 },

@@ -19,7 +19,7 @@ export async function openCustomerPortal(): Promise<void> {
     .single();
 
   if (!profile?.creem_customer_id) {
-    redirect('/dashboard/billing?error=no_customer');
+    redirect('/dashboard/settings/billing?error=no_customer');
   }
 
   let portalUrl: string;
@@ -28,7 +28,7 @@ export async function openCustomerPortal(): Promise<void> {
     portalUrl = result.customer_portal_link;
   } catch (e) {
     const message = e instanceof Error ? e.message : 'Portal unavailable';
-    redirect(`/dashboard/billing?error=${encodeURIComponent(message)}`);
+    redirect(`/dashboard/settings/billing?error=${encodeURIComponent(message)}`);
   }
 
   redirect(portalUrl);

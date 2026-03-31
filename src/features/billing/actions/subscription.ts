@@ -84,7 +84,7 @@ export async function cancelUserSubscription(
         .update({ status: 'canceled' })
         .eq('creem_subscription_id', sub.creem_subscription_id);
     }
-    revalidatePath('/dashboard/billing');
+    revalidatePath('/dashboard/settings/billing');
     return {};
   } catch (e) {
     return { error: (e as Error).message };
@@ -108,7 +108,7 @@ export async function resumeUserSubscription(): Promise<{ error?: string }> {
       .from('subscriptions')
       .update({ cancel_at_period_end: false, status: 'active' })
       .eq('creem_subscription_id', sub.creem_subscription_id);
-    revalidatePath('/dashboard/billing');
+    revalidatePath('/dashboard/settings/billing');
     return {};
   } catch (e) {
     return { error: (e as Error).message };
@@ -124,16 +124,16 @@ export async function upgradeUserSubscription(newProductId: string): Promise<voi
   if (!user) redirect('/login');
 
   const sub = await getLatestActiveSubscription(user.id);
-  if (!sub?.creem_subscription_id) redirect('/dashboard/billing');
+  if (!sub?.creem_subscription_id) redirect('/dashboard/settings/billing');
 
   try {
     await upgradeSubscription(sub.creem_subscription_id, newProductId);
   } catch (e) {
     const message = e instanceof Error ? e.message : 'Unable to upgrade subscription';
-    redirect(`/dashboard/billing?error=${encodeURIComponent(message)}`);
+    redirect(`/dashboard/settings/billing?error=${encodeURIComponent(message)}`);
   }
 
-  redirect('/dashboard/billing?upgraded=1');
+  redirect('/dashboard/settings/billing?upgraded=1');
 }
 
 export async function pauseUserSubscription(): Promise<{ error?: string }> {

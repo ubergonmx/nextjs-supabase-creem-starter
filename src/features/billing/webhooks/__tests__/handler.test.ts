@@ -257,6 +257,34 @@ describe('webhookHandlers', () => {
 
     expect(chain.rpc).not.toHaveBeenCalled();
   });
+
+  it('onSubscriptionPastDue — updates status to past_due', async () => {
+    const chain = makeChain(null);
+    (chain.insert as ReturnType<typeof vi.fn>).mockResolvedValueOnce({ data: null, error: null });
+    vi.mocked(createAdminClient).mockReturnValue(chain as never);
+
+    await webhookHandlers.onSubscriptionPastDue!({
+      ...baseEvent,
+      id: 'sub_4',
+      status: 'past_due',
+    } as never);
+
+    expect(chain.update).toHaveBeenCalledWith({ status: 'past_due' });
+  });
+
+  it('onSubscriptionUnpaid — updates status to incomplete', async () => {
+    const chain = makeChain(null);
+    (chain.insert as ReturnType<typeof vi.fn>).mockResolvedValueOnce({ data: null, error: null });
+    vi.mocked(createAdminClient).mockReturnValue(chain as never);
+
+    await webhookHandlers.onSubscriptionUnpaid!({
+      ...baseEvent,
+      id: 'sub_5',
+      status: 'unpaid',
+    } as never);
+
+    expect(chain.update).toHaveBeenCalledWith({ status: 'incomplete' });
+  });
 });
 
 describe('creditsForProductId', () => {

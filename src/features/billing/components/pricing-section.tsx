@@ -81,7 +81,7 @@ function PlanButton({
 
 export function PricingSection({ currentPlanId, isActiveSub = false }: Props) {
   return (
-    <section className="pt-28 pb-16 md:py-32">
+    <section className="py-28 pb-16 md:py-32">
       <div className="mx-auto max-w-5xl px-6">
         <div className="space-y-6">
           <h1 className="text-4xl font-semibold lg:text-5xl">Pricing</h1>

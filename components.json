@@ -21,9 +21,5 @@
     "lib": "@/lib",
     "hooks": "@/hooks"
   },
-  "registries": {
-    "@efferd": "https://efferd.com/r/{style}/{name}.json",
-    "@tailark": "https://tailark.com/r/{name}.json",
-    "@motion-primitives": "https://motion-primitives.com/c/{name}.json"
-  }
+  "registries": {}
 }

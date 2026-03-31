@@ -111,6 +111,24 @@ export const webhookHandlers = {
     }
   },
 
+  onSubscriptionPastDue: async (event: FlatSubscriptionEvent<'subscription.past_due'>) => {
+    const admin = createAdminClient();
+    if (await isDuplicate(admin, event.webhookId, 'subscription.past_due')) return;
+    await admin
+      .from('subscriptions')
+      .update({ status: 'past_due' })
+      .eq('creem_subscription_id', event.id);
+  },
+
+  onSubscriptionUnpaid: async (event: FlatSubscriptionEvent<'subscription.unpaid'>) => {
+    const admin = createAdminClient();
+    if (await isDuplicate(admin, event.webhookId, 'subscription.unpaid')) return;
+    await admin
+      .from('subscriptions')
+      .update({ status: 'incomplete' })
+      .eq('creem_subscription_id', event.id);
+  },
+
   onSubscriptionTrialing: async (event: FlatSubscriptionEvent<'subscription.trialing'>) => {
     const admin = createAdminClient();
     if (await isDuplicate(admin, event.webhookId, 'subscription.trialing')) return;

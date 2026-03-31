@@ -87,8 +87,6 @@ export async function signup(
   const headersList = await headers();
   const baseUrl = getAuthRedirectBaseUrl(headersList);
 
-
-  console.log('Signup base URL', baseUrl);
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
     email: result.data.email,
@@ -114,7 +112,6 @@ export async function loginWithOAuth(provider: OAuthProvider): Promise<void> {
   const headersList = await headers();
   const baseUrl = getAuthRedirectBaseUrl(headersList);
 
-  console.log('Login with OAuth base URL', baseUrl);
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,

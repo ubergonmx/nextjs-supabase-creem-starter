@@ -3,6 +3,8 @@ export type CreemWebhookEventType =
   | 'checkout.completed'
   | 'subscription.active'
   | 'subscription.paid'
+  | 'subscription.past_due'
+  | 'subscription.unpaid'
   | 'subscription.canceled'
   | 'subscription.expired'
   | 'subscription.trialing'
